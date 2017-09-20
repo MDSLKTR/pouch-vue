@@ -30,15 +30,19 @@
         });
       }
       function login(database) {
-        if (['http','https'].indexOf(database.adapter) == -1) return;
-        database.login(defaultUsername, defaultPassword).then(function(res) {
-          vm.$pouch.session = res;
-          return database.getUser(defaultUsername).then(function(res) {
+        return new Promise(function(resolve) {
+          if (['http','https'].indexOf(database.adapter) == -1) return resolve();
+          database.login(defaultUsername, defaultPassword).then(function(res) {
             vm.$pouch.session = res;
-          })
-        }).catch(function(error) {
-          vm.$pouch.authError = error
-        })
+            return database.getUser(defaultUsername).then(function(res) {
+              vm.$pouch.session = res;
+              resolve();
+            })
+          }).catch(function(error) {
+            vm.$pouch.authError = error;
+            resolve();
+          });
+        });
       }
       function logout(database) {
         database.logout()
@@ -46,13 +50,15 @@
       
       var $pouch = {
         useAuth: function(username, password) {
-          defaultUsername = username;
-          defaultPassword = password;
-          for (var dbString in databases) {
-            if (!databases.hasOwnProperty(dbString)) continue;
-            login(databases[dbString]);
-          }
-          vm.$pouch.gotAuth = true;
+          return new Promise(function (resolve) {
+            defaultUsername = username;
+            defaultPassword = password;
+            Promise.all(Object.keys(databases).map(function(dbString) {
+              return login(databases[dbString]);
+            })).then(function() {
+              vm.$pouch.gotAuth = true;
+            });
+          });
         },
         createUser: function(username, password) {
           defaultDB.signup(username, password).then(function(res) {
