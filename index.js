@@ -20,13 +20,20 @@
       vm._liveFinds = {};
 
       function fetchSession(database) {
-        if (['http', 'https'].indexOf(database.adapter) == -1) return;
-        database.getSession().then(function (res) {
-          return database.getUser(res.userCtx.name).then(function (res) {
-            vm.$pouch.session.hasAccess = res;
-          })
-        }).catch(function (error) {
-          vm.$pouch.authError = error
+        return new Promise(function (resolve, reject) {
+          if (['http', 'https'].indexOf(database.adapter) == -1) {
+            resolve();
+            return;
+          }
+          database.getSession().then(function (res) {
+            vm.$pouch.session.user = res.userCtx;
+            return database.getUser(res.userCtx.name).then(function (res) {
+              vm.$pouch.session.hasAccess = res;
+              resolve(res);
+            })
+          }).catch(function (error) {
+            resolve(error);
+          });
         });
       }
 
@@ -104,6 +111,11 @@
           remoteDBs.forEach((remoteDB) => {
             databases[remoteDB] = new pouch(remoteDB);
           });
+        },
+
+        getSession: function (remoteDB) {
+          console.log(remoteDB);
+          return fetchSession(new pouch(remoteDB));
         },
 
         sync: function (localDB, remoteDB, _options) {
