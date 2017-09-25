@@ -21,16 +21,16 @@
 
       function fetchSession(database) {
         return new Promise(function (resolve, reject) {
-          if (['http', 'https'].indexOf(database.adapter) == -1) {
-            resolve();
-            return;
-          }
-          database.getSession().then(function (res) {
-            vm.$pouch.session.user = res.userCtx;
-            return database.getUser(res.userCtx.name).then(function (res) {
-              vm.$pouch.session.hasAccess = res;
-              resolve(res);
-            })
+          database.getSession().then(function (session) {
+            return database.getUser(session.userCtx.name)
+              .then(function (user) {
+                resolve({
+                  user: session.userCtx,
+                  hasAccess: true,
+                });
+              }).catch(function (error) {
+                resolve(error);
+              })
           }).catch(function (error) {
             resolve(error);
           });
@@ -44,8 +44,7 @@
               vm.$pouch.session.user = res;
               database.getUser(defaultUsername)
                 .then(function (res) {
-                  console.log(res);
-                  vm.$pouch.session.hasAccess = res;
+                  vm.$pouch.session.hasAccess = true;
                   resolve(res);
                 })
                 .catch(function (error) {
@@ -91,7 +90,6 @@
           return new Promise((resolve) => {
             defaultUsername = null;
             defaultPassword = null;
-            vm.$pouch.gotAuth = false;
             vm.$pouch.session = {
               user: {},
               hasAccess: false,
@@ -107,15 +105,20 @@
           });
 
         },
-        connect: function (remoteDBs) {
+        preconnect: function (remoteDBs) {
           remoteDBs.forEach((remoteDB) => {
             databases[remoteDB] = new pouch(remoteDB);
           });
         },
 
         getSession: function (remoteDB) {
-          console.log(remoteDB);
-          return fetchSession(new pouch(remoteDB));
+          var remoteDB = new pouch(remoteDB);
+          if (!remoteDB._remote) {
+            return new Promise(function (resolve) {
+              resolve(true);
+            });
+          }
+          return fetchSession(remoteDB);
         },
 
         sync: function (localDB, remoteDB, _options) {
@@ -124,8 +127,7 @@
           if (!defaultDB) defaultDB = databases[remoteDB];
           var options = Object.assign({}, _options, { live: true, retry: true })
           var numPaused = 0;
-          vm.$pouch.loading[localDB] = true
-          // defineReactive(vm, '$pouch.ready', vm.$pouch.ready)
+          vm.$pouch.loading[localDB] = true;
           return pouch.sync(databases[localDB], databases[remoteDB], options)
             .on('paused', function (err) {
               if (err) {
@@ -140,15 +142,15 @@
               }
             })
             .on('active', function () {
-              // console.log('active callback')
+              console.log('active callback')
             })
             .on('denied', function (err) {
               vm.$pouch.errors[localDB] = err
               vm.$pouch.errors = Object.assign({}, vm.$pouch.errors)
-              // console.log('denied callback')
+              console.log('denied callback')
             })
             .on('complete', function (info) {
-              // console.log('complete callback')
+              console.log('complete callback')
             })
             .on('error', function (err) {
               vm.$pouch.errors[localDB] = err
@@ -197,6 +199,12 @@
             return res;
           });
         },
+        allDocs: function (db, options) {
+          return databases[db].allDocs(options ? options : {}).then(function (res) {
+            return res;
+          });
+        },
+
         get: function (db, object, options) {
           return databases[db].get(object, options ? options : {}).then(function (res) {
             return res;
@@ -210,7 +218,6 @@
         loading: {},
         authenticated: false,
         authError: {},
-        gotAuth: false
       }
       defineReactive(vm, '$pouch', $pouch);
       vm.$databases = databases; // Add non-reactive property
