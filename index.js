@@ -88,9 +88,14 @@
                     return new Promise((resolve) => {
                         defaultUsername = null;
                         defaultPassword = null;
-                        return defaultDB.logout().then(function() {
-                            resolve();
-                        });
+                        var defaultDB = new pouch(defaultDB);
+                        if (!defaultDB._remote) {
+                            return defaultDB.logout().then(function() {
+                                resolve();
+                            });
+                        }
+
+                        return resolve();
                     });
 
                 },
