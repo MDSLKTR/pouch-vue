@@ -64,7 +64,7 @@
             }
 
             var $pouch = {
-                authenticate: function(username, password) {
+                connect: function(username, password) {
                     return new Promise(function(resolve) {
                         defaultUsername = username;
                         defaultPassword = password;
@@ -101,7 +101,6 @@
 
                         return resolve();
                     });
-
                 },
 
                 getSession: function() {
