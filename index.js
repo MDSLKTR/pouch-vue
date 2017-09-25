@@ -59,6 +59,10 @@
                 });
             }
 
+            if (defaultDB) {
+                databases[defaultDB] = new pouch(defaultDB);
+            }
+
             var $pouch = {
                 authenticate: function(username, password) {
                     return new Promise(function(resolve) {
@@ -88,9 +92,9 @@
                     return new Promise((resolve) => {
                         defaultUsername = null;
                         defaultPassword = null;
-                        var defaultDB = new pouch(defaultDB);
-                        if (!defaultDB._remote) {
-                            return defaultDB.logout().then(function() {
+                        var db = new pouch(defaultDB);
+                        if (!db._remote) {
+                            return db.logout().then(function() {
                                 resolve();
                             });
                         }
@@ -99,20 +103,15 @@
                     });
 
                 },
-                preconnect: function(remoteDBs) {
-                    remoteDBs.forEach(function(remoteDB) {
-                        databases[remoteDB] = new pouch(remoteDB);
-                    });
-                },
 
                 getSession: function() {
-                    var defaultDB = new pouch(defaultDB);
-                    if (!defaultDB._remote) {
+                    var db = new pouch(defaultDB);
+                    if (!db._remote) {
                         return new Promise(function(resolve) {
                             resolve(true);
                         });
                     }
-                    return fetchSession(defaultDB);
+                    return fetchSession(db);
                 },
 
                 sync: function(localDB, remoteDB, _options) {
@@ -213,6 +212,7 @@
             vm.$databases = databases; // Add non-reactive property
 
             var pouchOptions = this.$options.pouch;
+
             if (!pouchOptions) {
                 return;
             }
@@ -310,6 +310,7 @@
             pouch = (options && options.pouch) || PouchDB;
             installSelectorReplicationPlugin();
             defaultDB = (options && options.defaultDB);
+            opts = Vue.options;
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
     };
