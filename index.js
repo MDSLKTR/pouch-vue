@@ -252,7 +252,7 @@
                     } else if (typeof databaseParam === 'string') {
                         if (!databases[databaseParam]) {
                             databases[databaseParam] = new pouch(databaseParam);
-                            if (vm.$pouch.gotAuth) login(databases[databaseParam]);
+                            login(databases[databaseParam]);
                         }
                         db = databases[databaseParam];
                     }
