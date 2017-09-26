@@ -7,6 +7,7 @@
     var databases = {};
 
     var vuePouch = {
+        version: '0.0.3',
         destroyed: function () {
             Object.values(this._liveFinds).map(function (lf) {
                 lf.cancel();
