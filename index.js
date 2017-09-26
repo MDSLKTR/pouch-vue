@@ -48,9 +48,10 @@
                     databases[defaultDB].login(defaultUsername, defaultPassword)
                         .then(function (user) {
                             databases[defaultDB].getUser(user.name)
-                                .then(function () {
+                                .then(function (userData) {
+                                    var userObj = Object.assign(user, { displayName: userData.displayname });
                                     resolve({
-                                        user: user,
+                                        user: userObj,
                                         hasAccess: true,
                                     });
                                 }).catch(function (error) {
