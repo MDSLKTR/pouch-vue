@@ -106,9 +106,16 @@
                             return;
                         }
 
-                        databases[defaultDB].logout().then(function (res) {
-                            resolve(res);
-                        });
+                        databases[defaultDB].logout()
+                            .then(function (res) {
+                                resolve({
+                                    ok: res.ok,
+                                    user: null,
+                                    hasAccess: false,
+                                });
+                            }).catch(function (error) {
+                                resolve(error);
+                            });
                     });
                 },
 
