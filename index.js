@@ -21,10 +21,10 @@
             var vm = this;
             vm._liveFinds = {};
 
-            function fetchSession(database) {
+            function fetchSession() {
                 return new Promise(function(resolve) {
-                    database.getSession().then(function(session) {
-                        return database.getUser(session.userCtx.name)
+                    defaultDB.getSession().then(function(session) {
+                        return defaultDB.getUser(session.userCtx.name)
                             .then(function() {
                                 resolve({
                                     user: session.userCtx,
@@ -39,11 +39,11 @@
                 });
             }
 
-            function login(database) {
+            function login() {
                 return new Promise(function(resolve) {
-                    database.login(defaultUsername, defaultPassword)
+                    defaultDB.login(defaultUsername, defaultPassword)
                         .then(function(session) {
-                            return database.getUser(session.userCtx.name)
+                            return defaultDB.getUser(session.userCtx.name)
                                 .then(function() {
                                     resolve({
                                         user: session.userCtx,
@@ -68,15 +68,15 @@
                     return new Promise(function(resolve) {
                         defaultUsername = username;
                         defaultPassword = password;
-                        Promise.all(Object.keys(databases)
-                            .filter(function(database) {
-                                return databases[database]._remote;
-                            })
-                            .map(function(database) {
-                                return login(databases[database]);
-                            })).then(function(res) {
-                                resolve(res);
-                            });
+
+                        if (databases[defaultDB]._remote) {
+                            resolve(false);
+                            return;
+                        }
+
+                        login(databases[defaultDB]).then(function(res) {
+                            resolve(res);
+                        });
                     });
                 },
                 createUser: function(username, password) {
@@ -89,17 +89,19 @@
                     });
                 },
                 disconnect: function() {
-                    return new Promise((resolve) => {
+                    return new Promise(function(resolve) {
                         defaultUsername = null;
                         defaultPassword = null;
                         var db = new pouch(defaultDB);
+
                         if (!db._remote) {
-                            return db.logout().then(function() {
-                                resolve();
-                            });
+                            resolve();
+                            return;
                         }
 
-                        return resolve();
+                        db.logout().then(function(res) {
+                            resolve(res);
+                        });
                     });
                 },
 
@@ -188,20 +190,14 @@
                     return databases[db].remove(object, options);
                 },
                 query: function(db, options) {
-                    return databases[db].query(options ? options : {}).then(function(res) {
-                        return res;
-                    });
+                    return databases[db].query(options ? options : {});
                 },
                 allDocs: function(db, options) {
-                    return databases[db].allDocs(options ? options : {}).then(function(res) {
-                        return res;
-                    });
+                    return databases[db].allDocs(options ? options : {});
                 },
 
                 get: function(db, object, options) {
-                    return databases[db].get(object, options ? options : {}).then(function(res) {
-                        return res;
-                    });
+                    return databases[db].get(object, options ? options : {});
                 },
                 errors: {},
                 loading: {},
