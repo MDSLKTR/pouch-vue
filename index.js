@@ -71,7 +71,9 @@
 
                         if (!databases[defaultDB]._remote) {
                             resolve({
-                                error: 'database is not remote',
+                                message: 'database is not remote',
+                                error: 'bad request',
+                                status: 400,
                             });
                             return;
                         }
@@ -97,7 +99,9 @@
 
                         if (!databases[defaultDB]._remote) {
                             resolve({
-                                error: 'database is not remote',
+                                message: 'database is not remote',
+                                error: 'bad request',
+                                status: 400,
                             });
                             return;
                         }
