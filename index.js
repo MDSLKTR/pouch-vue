@@ -21,6 +21,10 @@
             var vm = this;
             vm._liveFinds = {};
 
+            if (defaultDB) {
+                databases[defaultDB] = new pouch(defaultDB);
+            }
+
             function fetchSession() {
                 return new Promise(function(resolve) {
                     defaultDB.getSession().then(function(session) {
@@ -57,10 +61,6 @@
                             resolve(error);
                         });
                 });
-            }
-
-            if (defaultDB) {
-                databases[defaultDB] = new pouch(defaultDB);
             }
 
             var $pouch = {
