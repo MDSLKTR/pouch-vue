@@ -7,7 +7,6 @@
     var databases = {};
 
     var vuePouch = {
-        version: '0.0.3',
         destroyed: function () {
             Object.values(this._liveFinds).map(function (lf) {
                 lf.cancel();
@@ -65,6 +64,7 @@
             }
 
             var $pouch = {
+                version: '0.0.3',
                 connect: function (username, password) {
                     return new Promise(function (resolve) {
                         defaultUsername = username;
