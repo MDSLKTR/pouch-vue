@@ -1,4 +1,4 @@
-(function() {
+(function () {
     var vue = null;
     var pouch = null;
     var defaultDB = null;
@@ -7,12 +7,12 @@
     var databases = {};
 
     var vuePouch = {
-        destroyed: function() {
-            Object.values(this._liveFinds).map(function(lf) {
+        destroyed: function () {
+            Object.values(this._liveFinds).map(function (lf) {
                 lf.cancel();
             });
         },
-        created: function() {
+        created: function () {
             if (!vue) {
                 console.warn('[vue-pouch] not installed!');
                 return;
@@ -26,46 +26,46 @@
             }
 
             function fetchSession() {
-                return new Promise(function(resolve) {
-                    databases[defaultDB].getSession().then(function(session) {
-                        return databases[defaultDB].getUser(session.userCtx.name)
-                            .then(function() {
+                return new Promise(function (resolve) {
+                    databases[defaultDB].getSession().then(function (session) {
+                        databases[defaultDB].getUser(session.userCtx.name)
+                            .then(function () {
                                 resolve({
                                     user: session.userCtx,
                                     hasAccess: true,
                                 });
-                            }).catch(function(error) {
+                            }).catch(function (error) {
                                 resolve(error);
                             });
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         resolve(error);
                     });
                 });
             }
 
             function login() {
-                return new Promise(function(resolve) {
+                return new Promise(function (resolve) {
                     databases[defaultDB].login(defaultUsername, defaultPassword)
-                        .then(function(session) {
-                            return databases[defaultDB].getUser(session.userCtx.name)
-                                .then(function() {
+                        .then(function (user) {
+                            databases[defaultDB].getUser(user.name)
+                                .then(function () {
                                     resolve({
-                                        user: session.userCtx,
+                                        user: user,
                                         hasAccess: true,
                                     });
-                                }).catch(function(error) {
+                                }).catch(function (error) {
                                     resolve(error);
                                 });
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             resolve(error);
                         });
                 });
             }
 
             var $pouch = {
-                connect: function(username, password) {
-                    return new Promise(function(resolve) {
+                connect: function (username, password) {
+                    return new Promise(function (resolve) {
                         defaultUsername = username;
                         defaultPassword = password;
 
@@ -78,22 +78,22 @@
                             return;
                         }
 
-                        login().then(function(res) {
+                        login().then(function (res) {
                             resolve(res);
                         });
                     });
                 },
-                createUser: function(username, password) {
-                    return databases[defaultDB].signup(username, password).then(function() {
+                createUser: function (username, password) {
+                    return databases[defaultDB].signup(username, password).then(function () {
                         return vm.$pouch.connect(username, password);
-                    }).catch(function(error) {
-                        return new Promise(function(resolve) {
+                    }).catch(function (error) {
+                        return new Promise(function (resolve) {
                             resolve(error);
                         });
                     });
                 },
-                disconnect: function() {
-                    return new Promise(function(resolve) {
+                disconnect: function () {
+                    return new Promise(function (resolve) {
                         defaultUsername = null;
                         defaultPassword = null;
 
@@ -106,30 +106,30 @@
                             return;
                         }
 
-                        databases[defaultDB].logout().then(function(res) {
+                        databases[defaultDB].logout().then(function (res) {
                             resolve(res);
                         });
                     });
                 },
 
-                getSession: function() {
+                getSession: function () {
                     if (!databases[defaultDB]._remote) {
-                        return new Promise(function(resolve) {
+                        return new Promise(function (resolve) {
                             resolve(true);
                         });
                     }
                     return fetchSession();
                 },
 
-                sync: function(localDB, remoteDB, _options) {
+                sync: function (localDB, remoteDB, _options) {
                     if (!databases[localDB]) databases[localDB] = new pouch(localDB);
                     if (!databases[remoteDB]) databases[remoteDB] = new pouch(remoteDB);
                     if (!defaultDB) defaultDB = databases[remoteDB];
-                    var options = Object.assign({}, _options, {live: true, retry: true}),
+                    var options = Object.assign({}, _options, { live: true, retry: true }),
                         numPaused = 0;
                     vm.$pouch.loading[localDB] = true;
                     pouch.sync(databases[localDB], databases[remoteDB], options)
-                        .on('paused', function(err) {
+                        .on('paused', function (err) {
                             if (err) {
                                 vm.$pouch.errors[localDB] = err;
                                 vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
@@ -141,44 +141,44 @@
                                 vm.$pouch.loading = Object.assign({}, vm.$pouch.loading);
                             }
                         })
-                        .on('active', function() {
+                        .on('active', function () {
                             console.log('active callback');
                         })
-                        .on('denied', function(err) {
+                        .on('denied', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
                             console.log('denied callback');
                         })
-                        .on('complete', function(info) {
+                        .on('complete', function (info) {
                             console.log('complete callback');
                         })
-                        .on('error', function(err) {
+                        .on('error', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
                         });
 
                     fetchSession(databases[remoteDB]);
                 },
-                push: function(localDB, remoteDB, options) {
+                push: function (localDB, remoteDB, options) {
                     if (!databases[localDB]) databases[localDB] = new pouch(localDB);
                     if (!databases[remoteDB]) databases[remoteDB] = new pouch(remoteDB);
                     if (!defaultDB) defaultDB = databases[remoteDB];
                     databases[localDB].replicate.to(databases[remoteDB], options)
-                        .on('paused', function(err) {
+                        .on('paused', function (err) {
                             // console.log('paused callback')
                         })
-                        .on('active', function() {
+                        .on('active', function () {
                             // console.log('active callback')
                         })
-                        .on('denied', function(err) {
+                        .on('denied', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
                             // console.log('denied callback')
                         })
-                        .on('complete', function(info) {
+                        .on('complete', function (info) {
                             // console.log('complete callback')
                         })
-                        .on('error', function(err) {
+                        .on('error', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
                             // console.log('error callback')
@@ -186,23 +186,23 @@
 
                     fetchSession(databases[remoteDB]);
                 },
-                put: function(db, object, options) {
+                put: function (db, object, options) {
                     return databases[db].put(object, options);
                 },
-                post: function(db, object, options) {
+                post: function (db, object, options) {
                     return databases[db].post(object, options);
                 },
-                remove: function(db, object, options) {
+                remove: function (db, object, options) {
                     return databases[db].remove(object, options);
                 },
-                query: function(db, options) {
+                query: function (db, options) {
                     return databases[db].query(options ? options : {});
                 },
-                allDocs: function(db, options) {
+                allDocs: function (db, options) {
                     return databases[db].allDocs(options ? options : {});
                 },
 
-                get: function(db, object, options) {
+                get: function (db, object, options) {
                     return databases[db].get(object, options ? options : {});
                 },
                 errors: {},
@@ -221,16 +221,16 @@
             if (typeof pouchOptions === 'function') {
                 pouchOptions = pouchOptions();
             }
-            Object.keys(pouchOptions).map(function(key) {
+            Object.keys(pouchOptions).map(function (key) {
                 var pouchFn = pouchOptions[key];
                 if (typeof pouchFn !== 'function') {
-                    pouchFn = function() {
+                    pouchFn = function () {
                         return pouchOptions[key];
                     };
                 }
                 if (typeof vm.$data[key] === 'undefined') vm.$data[key] = null;
                 defineReactive(vm, key, null);
-                vm.$watch(pouchFn, function(config) {
+                vm.$watch(pouchFn, function (config) {
                     if (!config) {
                         if (!vm[key]) vm[key] = [];
                         return;
@@ -270,26 +270,26 @@
                         skip: skip,
                         limit: limit,
                         aggregate: true,
-                    }).on('update', function(update, aggregate) {
+                    }).on('update', function (update, aggregate) {
                         if (first && aggregate) aggregate = aggregate[0];
                         vm[key] = aggregateCache = aggregate;
-                    }).on('ready', function() {
+                    }).on('ready', function () {
                         vm[key] = aggregateCache;
                     });
                 }, {
-                    immediate: true,
-                });
+                        immediate: true,
+                    });
             });
         },
     };
 
     function installSelectorReplicationPlugin() {
         // This plugin enables selector-based replication
-        pouch.plugin(function(pouch) {
+        pouch.plugin(function (pouch) {
             var oldReplicate = pouch.replicate;
-            pouch.replicate = function(source, target, repOptions) {
+            pouch.replicate = function (source, target, repOptions) {
                 var sourceAjax = source._ajax;
-                source._ajax = function(ajaxOps, callback) {
+                source._ajax = function (ajaxOps, callback) {
                     if (ajaxOps.url.includes('_selector')) {
                         ajaxOps.url = ajaxOps.url.replace('filter=_selector%2F_selector', 'filter=_selector');
                         ajaxOps.method = 'POST';
@@ -306,7 +306,7 @@
 
     var api = {
         mixin: vuePouch,
-        install: function(Vue, options) {
+        install: function (Vue, options) {
             vue = Vue;
             pouch = (options && options.pouch) || PouchDB;
             installSelectorReplicationPlugin();
@@ -319,7 +319,7 @@
     if (typeof exports === 'object' && typeof module === 'object') {
         module.exports = api;
     } else if (typeof define === 'function' && define.amd) {
-        define(function() {
+        define(function () {
             return api;
         });
     } else if (typeof window !== 'undefined') {
