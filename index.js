@@ -28,10 +28,12 @@
             function fetchSession() {
                 return new Promise(function (resolve) {
                     databases[defaultDB].getSession().then(function (session) {
+                        console.log(session);
                         databases[defaultDB].getUser(session.userCtx.name)
-                            .then(function () {
+                            .then(function (userData) {
+                                var userObj = Object.assign({}, session.userCtx, { displayName: userData.displayname });
                                 resolve({
-                                    user: session.userCtx,
+                                    user: userObj,
                                     hasAccess: true,
                                 });
                             }).catch(function (error) {
@@ -49,7 +51,7 @@
                         .then(function (user) {
                             databases[defaultDB].getUser(user.name)
                                 .then(function (userData) {
-                                    var userObj = Object.assign(user, { displayName: userData.displayname });
+                                    var userObj = Object.assign({}, user, { displayName: userData.displayname });
                                     resolve({
                                         user: userObj,
                                         hasAccess: true,
