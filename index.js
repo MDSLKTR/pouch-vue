@@ -69,8 +69,10 @@
                         defaultUsername = username;
                         defaultPassword = password;
 
-                        if (databases[defaultDB]._remote) {
-                            resolve(false);
+                        if (!databases[defaultDB]._remote) {
+                            resolve({
+                                error: 'database is not remote',
+                            });
                             return;
                         }
 
@@ -94,7 +96,9 @@
                         defaultPassword = null;
 
                         if (!databases[defaultDB]._remote) {
-                            resolve();
+                            resolve({
+                                error: 'database is not remote',
+                            });
                             return;
                         }
 
