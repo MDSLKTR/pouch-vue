@@ -27,8 +27,8 @@
 
             function fetchSession() {
                 return new Promise(function(resolve) {
-                    defaultDB.getSession().then(function(session) {
-                        return defaultDB.getUser(session.userCtx.name)
+                    databases[defaultDB].getSession().then(function(session) {
+                        return databases[defaultDB].getUser(session.userCtx.name)
                             .then(function() {
                                 resolve({
                                     user: session.userCtx,
@@ -45,9 +45,9 @@
 
             function login() {
                 return new Promise(function(resolve) {
-                    defaultDB.login(defaultUsername, defaultPassword)
+                    databases[defaultDB].login(defaultUsername, defaultPassword)
                         .then(function(session) {
-                            return defaultDB.getUser(session.userCtx.name)
+                            return databases[defaultDB].getUser(session.userCtx.name)
                                 .then(function() {
                                     resolve({
                                         user: session.userCtx,
@@ -74,14 +74,14 @@
                             return;
                         }
 
-                        login(databases[defaultDB]).then(function(res) {
+                        login().then(function(res) {
                             resolve(res);
                         });
                     });
                 },
                 createUser: function(username, password) {
-                    return defaultDB.signup(username, password).then(function() {
-                        return vm.$pouch.authenticate(username, password);
+                    return databases[defaultDB].signup(username, password).then(function() {
+                        return vm.$pouch.connect(username, password);
                     }).catch(function(error) {
                         return new Promise(function(resolve) {
                             resolve(error);
@@ -92,27 +92,25 @@
                     return new Promise(function(resolve) {
                         defaultUsername = null;
                         defaultPassword = null;
-                        var db = new pouch(defaultDB);
 
-                        if (!db._remote) {
+                        if (!databases[defaultDB]._remote) {
                             resolve();
                             return;
                         }
 
-                        db.logout().then(function(res) {
+                        databases[defaultDB].logout().then(function(res) {
                             resolve(res);
                         });
                     });
                 },
 
                 getSession: function() {
-                    var db = new pouch(defaultDB);
-                    if (!db._remote) {
+                    if (!databases[defaultDB]._remote) {
                         return new Promise(function(resolve) {
                             resolve(true);
                         });
                     }
-                    return fetchSession(db);
+                    return fetchSession();
                 },
 
                 sync: function(localDB, remoteDB, _options) {
