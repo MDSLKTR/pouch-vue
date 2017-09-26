@@ -144,28 +144,34 @@
                             if (err) {
                                 vm.$pouch.errors[localDB] = err;
                                 vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
+                                vm.$emit('pouchdb-sync-error', err);
                                 return;
                             }
                             numPaused += 1;
                             if (numPaused >= 2) {
                                 vm.$pouch.loading[localDB] = false;
                                 vm.$pouch.loading = Object.assign({}, vm.$pouch.loading);
+                                vm.$emit('pouchdb-sync-paused', true);
                             }
                         })
+                        .on('change', function (info) {
+                            vm.$emit('pouchdb-sync-change', info);
+                        })
                         .on('active', function () {
-                            console.log('active callback');
+                            vm.$emit('pouchdb-sync-active', true);
                         })
                         .on('denied', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
-                            console.log('denied callback');
+                            vm.$emit('pouchdb-sync-denied', err);
                         })
                         .on('complete', function (info) {
-                            console.log('complete callback');
+                            vm.$emit('pouchdb-sync-complete', info);
                         })
                         .on('error', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
+                            vm.$emit('pouchdb-sync-error', error);
                         });
 
                     fetchSession(databases[remoteDB]);
@@ -176,23 +182,26 @@
                     if (!defaultDB) defaultDB = databases[remoteDB];
                     databases[localDB].replicate.to(databases[remoteDB], options)
                         .on('paused', function (err) {
-                            // console.log('paused callback')
+                            vm.$emit('pouchdb-push-error', err);
+                        })
+                        .on('change', function (info) {
+                            vm.$emit('pouchdb-push-change', info);
                         })
                         .on('active', function () {
-                            // console.log('active callback')
+                            vm.$emit('pouchdb-push-active', true);
                         })
                         .on('denied', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
-                            // console.log('denied callback')
+                            vm.$emit('pouchdb-push-denied', err);
                         })
                         .on('complete', function (info) {
-                            // console.log('complete callback')
+                            vm.$emit('pouchdb-push-complete', info);
                         })
                         .on('error', function (err) {
                             vm.$pouch.errors[localDB] = err;
                             vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
-                            // console.log('error callback')
+                            vm.$emit('pouchdb-push-error', err);
                         });
 
                     fetchSession(databases[remoteDB]);
