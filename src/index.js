@@ -67,7 +67,7 @@
             }
 
             let $pouch = {
-                version: '0.1.0',
+                version: '0.1.1',
                 connect(username, password) {
                     return new Promise((resolve) => {
                         defaultUsername = username;
