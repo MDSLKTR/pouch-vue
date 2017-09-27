@@ -1,11 +1,11 @@
 {
   "name": "pouch-vue",
-  "version": "0.1.6",
+  "version": "0.1.10",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
   "scripts": {
     "build": "rollup -c",
-    "postinstall": "npm install && npm install rollup -g && npm run build"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "pouchdb-live-find": "^0.4.0"
   },
   "devDependencies": {
+    "cross-env": "^5.0.5",
     "eslint": "^4.7.2",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
