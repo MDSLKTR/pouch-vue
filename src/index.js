@@ -66,6 +66,10 @@
                 });
             }
 
+            function addDB(db) {
+                databases[db] = new pouch(db);
+            }
+
             let $pouch = {
                 version: '__VERSION__',
                 connect(username, password) {
@@ -237,22 +241,40 @@
                     fetchSession(databases[remoteDB]);
                 },
                 put(db, object, options) {
-                    return databases[db].put(object, options);
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
+                    return databases[db].put(object, options ? options : {});
                 },
                 post(db, object, options) {
-                    return databases[db].post(object, options);
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
+                    return databases[db].post(object, options ? options : {});
                 },
                 remove(db, object, options) {
-                    return databases[db].remove(object, options);
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
+                    return databases[db].remove(object, options ? options : {});
                 },
                 query(db, options) {
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
                     return databases[db].query(options ? options : {});
                 },
                 allDocs(db, options) {
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
                     return databases[db].allDocs(options ? options : {});
                 },
 
                 get(db, object, options) {
+                    if (!databases[db]) {
+                        addDB(db);
+                    }
                     return databases[db].get(object, options ? options : {});
                 },
             };
