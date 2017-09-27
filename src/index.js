@@ -1,4 +1,4 @@
-(function() {
+(function () {
     let vue = null,
         pouch = null,
         defaultDB = null,
@@ -140,6 +140,10 @@
                     return fetchSession();
                 },
 
+                cancelSync(sync) {
+                    sync.cancel();
+                },
+
                 sync(localDB, remoteDB, _options) {
                     if (!databases[localDB]) {
                         databases[localDB] = new pouch(localDB);
@@ -151,10 +155,20 @@
                         defaultDB = databases[remoteDB];
                     }
 
-                    let options = Object.assign({}, _options, { live: true, retry: true }),
+                    let options = Object.assign({}, _options,
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: (delay) => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
+                            }
+                        }),
                         numPaused = 0;
 
-                    pouch.sync(databases[localDB], databases[remoteDB], options)
+                    let sync = pouch.sync(databases[localDB], databases[remoteDB], options)
                         .on('paused', (err) => {
                             if (err) {
                                 vm.$emit('pouchdb-sync-error', {
@@ -203,6 +217,8 @@
                         });
 
                     fetchSession(databases[remoteDB]);
+
+                    return sync;
                 },
                 push(localDB, remoteDB, options) {
                     if (!databases[localDB]) {
@@ -211,9 +227,7 @@
                     if (!databases[remoteDB]) {
                         databases[remoteDB] = new pouch(remoteDB);
                     }
-                    if (!defaultDB) {
-                        defaultDB = databases[remoteDB];
-                    }
+
                     databases[localDB].replicate.to(databases[remoteDB], options)
                         .on('paused', (err) => {
                             vm.$emit('pouchdb-push-error', err);
@@ -225,16 +239,12 @@
                             vm.$emit('pouchdb-push-active', true);
                         })
                         .on('denied', (err) => {
-                            vm.$pouch.errors[localDB] = err;
-                            vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
                             vm.$emit('pouchdb-push-denied', err);
                         })
                         .on('complete', (info) => {
                             vm.$emit('pouchdb-push-complete', info);
                         })
-                        .on('error', (err) =>{
-                            vm.$pouch.errors[localDB] = err;
-                            vm.$pouch.errors = Object.assign({}, vm.$pouch.errors);
+                        .on('error', (err) => {
                             vm.$emit('pouchdb-push-error', err);
                         });
 
@@ -349,8 +359,8 @@
                         vm[key] = aggregateCache;
                     });
                 }, {
-                    immediate: true,
-                });
+                        immediate: true,
+                    });
             });
         },
     };
