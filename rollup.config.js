@@ -2,6 +2,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import json from 'rollup-plugin-json';
 import buble from 'rollup-plugin-buble';
+import replace from 'rollup-plugin-replace';
 
 const pkg = require('./package.json');
 
@@ -15,6 +16,7 @@ export default {
         resolve(),
         commonjs(),
         buble(),
+        replace({ __VERSION__: pkg.version }),
     ],
     banner: `
     /**
