@@ -30,7 +30,6 @@
             function fetchSession() {
                 return new Promise((resolve) => {
                     databases[defaultDB].getSession().then((session) => {
-                        console.log(session);
                         databases[defaultDB].getUser(session.userCtx.name)
                             .then((userData) => {
                                 let userObj = Object.assign({}, session.userCtx, { displayName: userData.displayname });
