@@ -1,6 +1,6 @@
 {
   "name": "pouch-vue",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
   "scripts": {
