@@ -1,4 +1,4 @@
-(function () {
+(function() {
     let vue = null,
         pouch = null,
         defaultDB = null,
@@ -23,6 +23,8 @@
 
             if (defaultDB) {
                 databases[defaultDB] = new pouch(defaultDB);
+
+                registerListeners(databases[defaultDB]);
             }
 
             function fetchSession() {
@@ -66,8 +68,25 @@
                 });
             }
 
-            function addDB(db) {
+            function makeInstance(db) {
                 databases[db] = new pouch(db);
+
+                registerListeners(databases[db]);
+            }
+
+            function registerListeners(db) {
+                db.on('created', (name) => {
+                    vm.$emit('pouchdb-db-created', {
+                        db: name,
+                        ok: true,
+                    });
+                });
+                db.on('destroyed', (name) => {
+                    vm.$emit('pouchdb-db-destroyed', {
+                        db: name,
+                        ok: true,
+                    });
+                });
             }
 
             let $pouch = {
@@ -127,6 +146,26 @@
                     });
                 },
 
+                destroy(db) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.destroy();
+                },
+
+                defaults(options) {
+                    pouch.defaults(options);
+                },
+
+                close(db) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.close();
+                },
+
                 getSession() {
                     if (!databases[defaultDB]._remote) {
                         return new Promise((resolve) => {
@@ -140,16 +179,12 @@
                     return fetchSession();
                 },
 
-                cancelSync(sync) {
-                    sync.cancel();
-                },
-
                 sync(localDB, remoteDB, _options) {
                     if (!databases[localDB]) {
-                        databases[localDB] = new pouch(localDB);
+                        makeInstance(localDB);
                     }
                     if (!databases[remoteDB]) {
-                        databases[remoteDB] = new pouch(remoteDB);
+                        makeInstance(remoteDB);
                     }
                     if (!defaultDB) {
                         defaultDB = databases[remoteDB];
@@ -164,7 +199,7 @@
                                     return 1000;
                                 }
                                 return delay * 3;
-                            }
+                            },
                         }),
                         numPaused = 0;
 
@@ -222,13 +257,13 @@
                 },
                 push(localDB, remoteDB, options) {
                     if (!databases[localDB]) {
-                        databases[localDB] = new pouch(localDB);
+                        makeInstance(localDB);
                     }
                     if (!databases[remoteDB]) {
-                        databases[remoteDB] = new pouch(remoteDB);
+                        makeInstance(remoteDB);
                     }
 
-                    databases[localDB].replicate.to(databases[remoteDB], options)
+                    let rep = databases[localDB].replicate.to(databases[remoteDB], options)
                         .on('paused', (err) => {
                             vm.$emit('pouchdb-push-error', err);
                         })
@@ -249,43 +284,181 @@
                         });
 
                     fetchSession(databases[remoteDB]);
+
+                    return rep;
                 },
-                put(db, object, options) {
-                    if (!databases[db]) {
-                        addDB(db);
+
+                pull(localDB, remoteDB, options) {
+                    if (!databases[localDB]) {
+                        makeInstance(localDB);
                     }
-                    return databases[db].put(object, options ? options : {});
+                    if (!databases[remoteDB]) {
+                        makeInstance(remoteDB);
+                    }
+
+                    let rep = databases[localDB].replicate.from(databases[remoteDB], options)
+                        .on('paused', (err) => {
+                            vm.$emit('pouchdb-pull-error', err);
+                        })
+                        .on('change', (info) => {
+                            vm.$emit('pouchdb-pull-change', info);
+                        })
+                        .on('active', () => {
+                            vm.$emit('pouchdb-pull-active', true);
+                        })
+                        .on('denied', (err) => {
+                            vm.$emit('pouchdb-pull-denied', err);
+                        })
+                        .on('complete', (info) => {
+                            vm.$emit('pouchdb-pull-complete', info);
+                        })
+                        .on('error', (err) => {
+                            vm.$emit('pouchdb-pull-error', err);
+                        });
+
+                    fetchSession(databases[remoteDB]);
+
+                    return rep;
                 },
-                post(db, object, options) {
+
+                changes(db, _options) {
                     if (!databases[db]) {
-                        addDB(db);
+                        makeInstance(db);
                     }
-                    return databases[db].post(object, options ? options : {});
-                },
-                remove(db, object, options) {
-                    if (!databases[db]) {
-                        addDB(db);
-                    }
-                    return databases[db].remove(object, options ? options : {});
-                },
-                query(db, options) {
-                    if (!databases[db]) {
-                        addDB(db);
-                    }
-                    return databases[db].query(options ? options : {});
-                },
-                allDocs(db, options) {
-                    if (!databases[db]) {
-                        addDB(db);
-                    }
-                    return databases[db].allDocs(options ? options : {});
+
+                    let options = Object.assign({}, _options,
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: (delay) => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
+                            },
+                        });
+
+                    let changes = db.changes(options)
+                        .on('paused', (err) => {
+                            vm.$emit('pouchdb-changes-error', err);
+                        })
+                        .on('change', (info) => {
+                            vm.$emit('pouchdb-changes-change', info);
+                        })
+                        .on('active', () => {
+                            vm.$emit('pouchdb-changes-active', true);
+                        })
+                        .on('denied', (err) => {
+                            vm.$emit('pouchdb-changes-denied', err);
+                        })
+                        .on('complete', (info) => {
+                            vm.$emit('pouchdb-changes-complete', info);
+                        })
+                        .on('error', (err) => {
+                            vm.$emit('pouchdb-changes-error', err);
+                        });
+
+                    fetchSession(databases[db]);
+
+                    return changes;
                 },
 
                 get(db, object, options) {
                     if (!databases[db]) {
-                        addDB(db);
+                        makeInstance(db);
                     }
                     return databases[db].get(object, options ? options : {});
+                },
+
+                put(db, object, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+                    return databases[db].put(object, options ? options : {});
+                },
+
+                post(db, object, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+                    return databases[db].post(object, options ? options : {});
+                },
+
+                remove(db, object, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+                    return databases[db].remove(object, options ? options : {});
+                },
+
+                query(db, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+                    return databases[db].query(options ? options : {});
+                },
+
+                allDocs(db, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+                    return databases[db].allDocs(options ? options : {});
+                },
+
+                bulkDocs(db, docs, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.bulkDocs(docs, options ? options : {});
+                },
+
+                compact(db, options) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.compact(options ? options : {});
+                },
+
+                viewCleanup(db) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.viewCleanup();
+                },
+
+                info(db) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.info();
+                },
+
+                putAttachment(db, docId, rev, attachment) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.putAttachment(docId, attachment.id, rev ? rev: null, attachment.data, attachment.type);
+                },
+
+                getAttachment(db, docId, attachmentId) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.getAttachment(docId, attachmentId);
+                },
+
+                deleteAttachment(db, docId, attachmentId, docRev) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return db.removeAttachment(docId, attachmentId, docRev);
                 },
             };
 
@@ -359,8 +532,8 @@
                         vm[key] = aggregateCache;
                     });
                 }, {
-                        immediate: true,
-                    });
+                    immediate: true,
+                });
             });
         },
     };
@@ -393,6 +566,11 @@
             pouch = (options && options.pouch) || PouchDB;
             installSelectorReplicationPlugin();
             defaultDB = (options && options.defaultDB);
+
+            if (options.debug) {
+                pouch.debug.enable(options.debug);
+            }
+
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
     };

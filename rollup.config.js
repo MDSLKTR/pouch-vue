@@ -9,7 +9,7 @@ const pkg = require('./package.json');
 export default {
     input: './src/index.js',
     output: [
-        { file: pkg.main, format: 'umd', name: 'vue-pouch-adapter' },
+        { file: pkg.main, format: 'umd', name: 'pouchVue' },
     ],
     plugins: [
         json(),
@@ -20,7 +20,7 @@ export default {
     ],
     banner: `
     /**
-     * vue-pouch-adapter v${pkg.version}
+     * pouch vue v${pkg.version}
      * (c) ${new Date().getFullYear()} Simon Kunz
      * @license MIT
      */

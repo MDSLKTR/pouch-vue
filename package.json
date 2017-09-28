@@ -1,11 +1,13 @@
 {
   "name": "pouch-vue",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
   "scripts": {
     "build": "rollup -c",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
