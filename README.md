@@ -3,24 +3,25 @@
 ##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though ###
 
 ## Installation
-```
 Install via npm:
-
+```
     npm install --save pouch-vue
+```
 
 The only requirement is that `pouchdb-live-find` is installed:
-
+```
     import PouchDB from 'pouchdb-browser'
     PouchDB.plugin(require('pouchdb-find'));
     PouchDB.plugin(require('pouchdb-live-find'));
+```
     
 If you want to use remote databases (CouchDB, Cloudant, etc.), you should also install the authentication plugin:
-
+```
     PouchDB.plugin(require('pouchdb-authentication'));
-    
+```
 Then, plug VuePouch into Vue:
     import PouchVue from 'pouchVue';
-
+```
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'removeDbName'  // this is used as a default connect/disconnect database
@@ -48,7 +49,7 @@ ___
 ___
 * `$pouch.sync(localDatabase, remoteDatabase, options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this for instance case `pouchdb-sync-change` when a change occurs.
 
-**default options**:
+**default options (will be merged with the options passed in)**:
  ```{
 live: true,
 retry: true,
