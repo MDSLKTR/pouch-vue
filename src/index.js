@@ -397,11 +397,14 @@
                     return databases[db].query(options ? options : {});
                 },
 
-                allDocs(db, options) {
+                allDocs(db, _options) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].allDocs(options ? options : {});
+
+                    let options = Object.assign({}, { include_docs: true }, _options);
+
+                    return databases[db].allDocs(options);
                 },
 
                 bulkDocs(db, docs, options) {
@@ -409,7 +412,7 @@
                         makeInstance(db);
                     }
 
-                    return db.bulkDocs(docs, options ? options : {});
+                    return databases[db].bulkDocs(docs, options ? options : {});
                 },
 
                 compact(db, options) {
@@ -417,7 +420,7 @@
                         makeInstance(db);
                     }
 
-                    return db.compact(options ? options : {});
+                    return databases[db].compact(options ? options : {});
                 },
 
                 viewCleanup(db) {
@@ -425,7 +428,7 @@
                         makeInstance(db);
                     }
 
-                    return db.viewCleanup();
+                    return databases[db].viewCleanup();
                 },
 
                 info(db) {
@@ -433,7 +436,7 @@
                         makeInstance(db);
                     }
 
-                    return db.info();
+                    return databases[db].info();
                 },
 
                 putAttachment(db, docId, rev, attachment) {
@@ -441,7 +444,7 @@
                         makeInstance(db);
                     }
 
-                    return db.putAttachment(docId, attachment.id, rev ? rev: null, attachment.data, attachment.type);
+                    return databases[db].putAttachment(docId, attachment.id, rev ? rev: null, attachment.data, attachment.type);
                 },
 
                 getAttachment(db, docId, attachmentId) {
@@ -449,7 +452,7 @@
                         makeInstance(db);
                     }
 
-                    return db.getAttachment(docId, attachmentId);
+                    return databases[db].getAttachment(docId, attachmentId);
                 },
 
                 deleteAttachment(db, docId, attachmentId, docRev) {
@@ -457,7 +460,7 @@
                         makeInstance(db);
                     }
 
-                    return db.removeAttachment(docId, attachmentId, docRev);
+                    return databases[db].removeAttachment(docId, attachmentId, docRev);
                 },
             };
 

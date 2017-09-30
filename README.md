@@ -1,6 +1,6 @@
 # Pouch Vue
 
-##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though ###
+##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though
 
 ## Installation
 Install via npm:
@@ -14,7 +14,7 @@ The only requirement is that `pouchdb-live-find` is installed:
     PouchDB.plugin(require('pouchdb-find'));
     PouchDB.plugin(require('pouchdb-live-find'));
 ```
-    
+
 If you want to use remote databases (CouchDB, Cloudant, etc.), you should also install the authentication plugin:
 ```
     PouchDB.plugin(require('pouchdb-authentication'));
@@ -40,30 +40,30 @@ Default events are mounted on each db you connect to: https://pouchdb.com/api.ht
 All Methods return a promise and mirror or extend the API from pouchdb.
 
 * `$pouch.getSession()`: Returns the current session if already logged in to the defaultDB.
-* `$pouch.connect(username, password)`: Connects you to the defaultDB and return the user object on success.
+* `$pouch.connect(username, password)`: Connects you to the defaultDB and returns the user object on success.
 * `$pouch.disconnect()`: Disconnects you from the defaultDB and clears the session data.
-* `$pouch.createUser(name, password)`: Creates a user in the remote database and also start a new session.
+* `$pouch.createUser(name, password)`: Creates a user in the remote database and starts a new session.
 ___
 * `$pouch.destroy(db)`: same as https://pouchdb.com/api.html#delete_database
 * `$pouch.defaults(options)`: same as https://pouchdb.com/api.html#defaults
 ___
-* `$pouch.sync(localDatabase, remoteDatabase, options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this for instance case `pouchdb-sync-change` when a change occurs.
+* `$pouch.sync(localDatabase, remoteDatabase, options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
 
 **default options (will be merged with the options passed in)**:
- ```{
-live: true,
-retry: true,
-back_off_function: (delay) => {
-    if (delay === 0) {
-        return 1000;
-    }
-    return delay * 3;
+ ```
+{
+    live: true,
+    retry: true,
+    back_off_function: (delay) => {
+        if (delay === 0) {
+            return 1000;
+        }
+        return delay * 3;
     },
 }
 ```
 **For example:**
 ```
-
     $pouch.sync('complaints', 'https:/42.233.1.44/complaints', {
       filter:'_selector',
       selector: {
@@ -71,7 +71,7 @@ back_off_function: (delay) => {
         assignee: this.session.name
       }
     });
-    
+
 ```
 * `$pouch.push(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
 * `$pouch.pull(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
@@ -89,7 +89,7 @@ back_off_function: (delay) => {
 * `$pouch.close(db)`: https://pouchdb.com/api.html#close_database
 
 #### Non-Reactive Properties
-* `vm.$databases`: the pouchdb instances. shared across all components.
+* `vm.$databases`: the pouchdb instances which are shared across all components.
 
 ## Examples
 
@@ -142,12 +142,12 @@ back_off_function: (delay) => {
     pouch: {
       // The function returns a Mango-like selector that is run against the `people` database.
       // The result of the query is assigned to the `people` property.
-      people: function() {
+      people() {
         if (!this.age) return;
         return {age: this.age, type: "person"}
       },
       // You can also specify the database dynamically (local or remote), as well as limits, skip and sort order:
-      peopleInOtherDatabase: function() {
+      peopleInOtherDatabase() {
         return {
           database: this.selectedDatabase, // you can pass a database string or a pouchdb instance
           selector: {type: "person"},
@@ -168,8 +168,8 @@ If you only want to sync a single document that matches a selector, use `first: 
 ```vue
 module.exports = {
   // ...
-  pouch: {  
-    projectDetails: function() {
+  pouch: {
+    projectDetails() {
       return {
         database: 'mydatabase',
         selector: {_id: this.selectedProjectId},
