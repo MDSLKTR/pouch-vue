@@ -75,10 +75,10 @@ ___
 ```
 * `$pouch.push(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
 * `$pouch.pull(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
-* `$pouch.changes(database, options): listens for change on a db like: https://pouchdb.com/api.html#changes
+* `$pouch.changes(database, options)`: Listens for change on a db like: https://pouchdb.com/api.html#changes
 * `$pouch.put/post/remove/get(database, ...)`: Same as db.put/post/remove/get(...) https://pouchdb.com/api.html#create_document
 * `$pouch.query(db, options)`: like https://pouchdb.com/api.html#query_database
-* `$pouch.allDocs(db, options)`: like https://pouchdb.com/api.html#batch_fetch
+* `$pouch.allDocs(db, options)`: like https://pouchdb.com/api.html#batch_fetch but `include_docs` is set to true by default. You can however overwrite it of course.
 * `$pouch.bulkDocs(db, options)`: https://pouchdb.com/api.html#batch_create
 * `$pouch.compact(db, options)`: https://pouchdb.com/api.html#compaction
 * `$pouch.viewCleanup(db)`: https://pouchdb.com/api.html#view_cleanup
