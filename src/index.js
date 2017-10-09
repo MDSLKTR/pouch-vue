@@ -145,27 +145,31 @@
                     });
                 },
 
-                destroy(db) {
+                destroy: function destroy(db) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    return databases[db].destroy().then(() => {
-                        delete databases[db];
+                    return databases[db].destroy().then(function () {
+                        if (db !== defaultDB) {
+                            delete databases[db];
+                        }
                     });
                 },
 
-                defaults(options) {
+                defaults: function defaults(options) {
                     pouch.defaults(options);
                 },
 
-                close(db) {
+                close: function close(db) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    return databases[db].close().then(() => {
-                        delete databases[db];
+                    return databases[db].close().then(function () {
+                        if (db !== defaultDB) {
+                            delete databases[db];
+                        }
                     });
                 },
 
