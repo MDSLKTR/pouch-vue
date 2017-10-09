@@ -150,7 +150,9 @@
                         makeInstance(db);
                     }
 
-                    return db.destroy();
+                    return db.destroy().then(() => {
+                        delete databases[db];
+                    });
                 },
 
                 defaults(options) {
@@ -162,7 +164,9 @@
                         makeInstance(db);
                     }
 
-                    return db.close();
+                    return db.close().then(() => {
+                        delete databases[db];
+                    });
                 },
 
                 getSession() {
