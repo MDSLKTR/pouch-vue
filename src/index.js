@@ -150,7 +150,7 @@
                         makeInstance(db);
                     }
 
-                    return db.destroy().then(() => {
+                    return databases[db].destroy().then(() => {
                         delete databases[db];
                     });
                 },
@@ -164,7 +164,7 @@
                         makeInstance(db);
                     }
 
-                    return db.close().then(() => {
+                    return databases[db].close().then(() => {
                         delete databases[db];
                     });
                 },
