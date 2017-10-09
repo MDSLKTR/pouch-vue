@@ -390,11 +390,11 @@
                     return databases[db].remove(object, options);
                 },
 
-                query(db, options = {}) {
+                query(db, fun, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].query(options);
+                    return databases[db].query(fun, options);
                 },
 
                 allDocs(db, options = {}) {
