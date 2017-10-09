@@ -14,16 +14,17 @@
         },
         created() {
             if (!vue) {
-                console.warn('[vue-pouch-adapter] not installed!');
+                console.warn('pouch-vue not installed!');
                 return;
             }
-            let defineReactive = vue.util.defineReactive;
-            let vm = this;
+
+            let defineReactive = vue.util.defineReactive,
+                vm = this;
+
             vm._liveFinds = {};
 
             if (defaultDB) {
                 databases[defaultDB] = new pouch(defaultDB);
-
                 registerListeners(databases[defaultDB]);
             }
 
@@ -69,7 +70,6 @@
 
             function makeInstance(db) {
                 databases[db] = new pouch(db);
-
                 registerListeners(databases[db]);
             }
 
@@ -178,7 +178,7 @@
                     return fetchSession();
                 },
 
-                sync(localDB, remoteDB, _options) {
+                sync(localDB, remoteDB, options) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -189,7 +189,7 @@
                         defaultDB = databases[remoteDB];
                     }
 
-                    let options = Object.assign({}, _options,
+                    let _options = Object.assign({},
                         {
                             live: true,
                             retry: true,
@@ -199,10 +199,10 @@
                                 }
                                 return delay * 3;
                             },
-                        }),
+                        }, options),
                         numPaused = 0;
 
-                    let sync = pouch.sync(databases[localDB], databases[remoteDB], options)
+                    let sync = pouch.sync(databases[localDB], databases[remoteDB], _options)
                         .on('paused', (err) => {
                             if (err) {
                                 vm.$emit('pouchdb-sync-error', {
@@ -254,7 +254,7 @@
 
                     return sync;
                 },
-                push(localDB, remoteDB, options) {
+                push(localDB, remoteDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -287,7 +287,7 @@
                     return rep;
                 },
 
-                pull(localDB, remoteDB, options) {
+                pull(localDB, remoteDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -320,12 +320,12 @@
                     return rep;
                 },
 
-                changes(db, _options) {
+                changes(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    let options = Object.assign({}, _options,
+                    let _options = Object.assign({},
                         {
                             live: true,
                             retry: true,
@@ -335,9 +335,9 @@
                                 }
                                 return delay * 3;
                             },
-                        });
+                        }, options);
 
-                    let changes = db.changes(options)
+                    let changes = db.changes(_options)
                         .on('paused', (err) => {
                             vm.$emit('pouchdb-changes-error', err);
                         })
@@ -362,65 +362,65 @@
                     return changes;
                 },
 
-                get(db, object, options) {
+                get(db, object, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].get(object, options ? options : {});
+                    return databases[db].get(object, options);
                 },
 
-                put(db, object, options) {
+                put(db, object, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].put(object, options ? options : {});
+                    return databases[db].put(object, options);
                 },
 
-                post(db, object, options) {
+                post(db, object, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].post(object, options ? options : {});
+                    return databases[db].post(object, options);
                 },
 
-                remove(db, object, options) {
+                remove(db, object, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].remove(object, options ? options : {});
+                    return databases[db].remove(object, options);
                 },
 
-                query(db, options) {
+                query(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db].query(options ? options : {});
+                    return databases[db].query(options);
                 },
 
-                allDocs(db, _options) {
+                allDocs(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    let options = Object.assign({}, { include_docs: true }, _options);
+                    let _options = Object.assign({}, { include_docs: true }, options);
 
-                    return databases[db].allDocs(options);
+                    return databases[db].allDocs(_options);
                 },
 
-                bulkDocs(db, docs, options) {
+                bulkDocs(db, docs, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    return databases[db].bulkDocs(docs, options ? options : {});
+                    return databases[db].bulkDocs(docs, options);
                 },
 
-                compact(db, options) {
+                compact(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    return databases[db].compact(options ? options : {});
+                    return databases[db].compact(options);
                 },
 
                 viewCleanup(db) {
@@ -476,6 +476,7 @@
             if (typeof pouchOptions === 'function') {
                 pouchOptions = pouchOptions();
             }
+
             Object.keys(pouchOptions).map((key) => {
                 let pouchFn = pouchOptions[key];
                 if (typeof pouchFn !== 'function') {
@@ -483,9 +484,11 @@
                         return pouchOptions[key];
                     };
                 }
+
                 if (typeof vm.$data[key] === 'undefined') {
                     vm.$data[key] = null;
                 }
+
                 defineReactive(vm, key, null);
                 vm.$watch(pouchFn, (config) => {
                     if (!config) {

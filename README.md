@@ -34,7 +34,7 @@ Then, plug VuePouch into Vue:
 ### $pouch
 
 `$pouch` is made available on all vue instances and implements most of pouchdbs current API (https://pouchdb.com/api.html).
-Default events are mounted on each db you connect to: https://pouchdb.com/api.html#events
+Default events are mounted on each db you connect to: https://pouchdb.com/api.html#events. When a database is created `pouchdb-db-created` is emitted and `pouchdb-db-destroyed` when it's destroyed.
 
 #### Methods
 All Methods return a promise and mirror or extend the API from pouchdb.
