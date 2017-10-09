@@ -405,6 +405,14 @@
                     return databases[db].query(fun, options);
                 },
 
+                find(db, options = {}) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return databases[db].find(options);
+                },
+
                 allDocs(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
