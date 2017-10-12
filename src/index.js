@@ -236,7 +236,7 @@
                         .on('active', () => {
                             vm.$emit('pouchdb-sync-active', {
                                 db: localDB,
-                                paused: true,
+                                active: true,
                             });
                         })
                         .on('denied', (err) => {
@@ -270,24 +270,54 @@
                         makeInstance(remoteDB);
                     }
 
+                    let numPaused = 0;
+
                     let rep = databases[localDB].replicate.to(databases[remoteDB], options)
                         .on('paused', (err) => {
-                            vm.$emit('pouchdb-push-error', err);
+                            if (err) {
+                                vm.$emit('pouchdb-push-error', {
+                                    db: localDB,
+                                    error: err,
+                                });
+                                return;
+                            }
+                            numPaused += 1;
+                            if (numPaused >= 2) {
+                                vm.$emit('pouchdb-push-paused', {
+                                    db: localDB,
+                                    paused: true,
+                                });
+                            }
                         })
                         .on('change', (info) => {
-                            vm.$emit('pouchdb-push-change', info);
+                            vm.$emit('pouchdb-push-change', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('active', () => {
-                            vm.$emit('pouchdb-push-active', true);
+                            vm.$emit('pouchdb-push-active', {
+                                db: localDB,
+                                active: true,
+                            });
                         })
                         .on('denied', (err) => {
-                            vm.$emit('pouchdb-push-denied', err);
+                            vm.$emit('pouchdb-push-denied', {
+                                db: localDB,
+                                error: err,
+                            });
                         })
                         .on('complete', (info) => {
-                            vm.$emit('pouchdb-push-complete', info);
+                            vm.$emit('pouchdb-push-complete', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('error', (err) => {
-                            vm.$emit('pouchdb-push-error', err);
+                            vm.$emit('pouchdb-push-error', {
+                                db: localDB,
+                                error: error,
+                            });
                         });
 
                     fetchSession(databases[remoteDB]);
@@ -303,24 +333,54 @@
                         makeInstance(remoteDB);
                     }
 
+                    let numPaused = 0;
+
                     let rep = databases[localDB].replicate.from(databases[remoteDB], options)
                         .on('paused', (err) => {
-                            vm.$emit('pouchdb-pull-error', err);
+                            if (err) {
+                                vm.$emit('pouchdb-pull-error', {
+                                    db: localDB,
+                                    error: err,
+                                });
+                                return;
+                            }
+                            numPaused += 1;
+                            if (numPaused >= 2) {
+                                vm.$emit('pouchdb-pull-paused', {
+                                    db: localDB,
+                                    paused: true,
+                                });
+                            }
                         })
                         .on('change', (info) => {
-                            vm.$emit('pouchdb-pull-change', info);
+                            vm.$emit('pouchdb-pull-change', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('active', () => {
-                            vm.$emit('pouchdb-pull-active', true);
+                            vm.$emit('pouchdb-pull-active', {
+                                db: localDB,
+                                active: true,
+                            });
                         })
                         .on('denied', (err) => {
-                            vm.$emit('pouchdb-pull-denied', err);
+                            vm.$emit('pouchdb-pull-denied', {
+                                db: localDB,
+                                error: err,
+                            });
                         })
                         .on('complete', (info) => {
-                            vm.$emit('pouchdb-pull-complete', info);
+                            vm.$emit('pouchdb-pull-complete', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('error', (err) => {
-                            vm.$emit('pouchdb-pull-error', err);
+                            vm.$emit('pouchdb-pull-error', {
+                                db: localDB,
+                                error: error,
+                            });
                         });
 
                     fetchSession(databases[remoteDB]);
