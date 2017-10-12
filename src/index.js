@@ -413,6 +413,14 @@
                     return databases[db].find(options);
                 },
 
+                createIndex(db, index = {}) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    return databases[db].createIndex(index);
+                },
+
                 allDocs(db, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
