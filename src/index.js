@@ -316,7 +316,7 @@
                         .on('error', (err) => {
                             vm.$emit('pouchdb-push-error', {
                                 db: localDB,
-                                error: error,
+                                error: err,
                             });
                         });
 
@@ -379,7 +379,7 @@
                         .on('error', (err) => {
                             vm.$emit('pouchdb-pull-error', {
                                 db: localDB,
-                                error: error,
+                                error: err,
                             });
                         });
 
