@@ -83,6 +83,8 @@ ___
 * `$pouch.compact(db, options)`: https://pouchdb.com/api.html#compaction
 * `$pouch.viewCleanup(db)`: https://pouchdb.com/api.html#view_cleanup
 * `$pouch.info(db)`: like https://pouchdb.com/api.html#database_information
+* `$pouch.find(db, request)`: like https://pouchdb.com/api.html#query_index
+* `$pouch.createIndex(db, index)`: like https://pouchdb.com/api.html#create_index
 * `$pouch.putAttachment(db, docId, [rev], attachmentObject(id,data,type)`: like https://pouchdb.com/api.html#save_attachment
 * `$pouch.getAttachment(db, docId, attachmentId)`: like https://pouchdb.com/api.html#get_attachment
 * `$pouch.deleteAttachment(db, docId, attachmentId, docRev)`: like https://pouchdb.com/api.html#delete_attachment

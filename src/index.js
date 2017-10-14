@@ -33,7 +33,7 @@
                     databases[defaultDB].getSession().then((session) => {
                         databases[defaultDB].getUser(session.userCtx.name)
                             .then((userData) => {
-                                let userObj = Object.assign({}, session.userCtx, { displayName: userData.displayname });
+                                let userObj = Object.assign({}, session.userCtx, userData);
                                 resolve({
                                     user: userObj,
                                     hasAccess: true,
@@ -53,7 +53,7 @@
                         .then((user) => {
                             databases[defaultDB].getUser(user.name)
                                 .then((userData) => {
-                                    let userObj = Object.assign({}, user, { displayName: userData.displayname });
+                                    let userObj = Object.assign({}, user, userData);
                                     resolve({
                                         user: userObj,
                                         hasAccess: true,
@@ -403,26 +403,55 @@
                                 }
                                 return delay * 3;
                             },
-                        }, options);
+                        }, options),
+                        numPaused = 0;
 
                     let changes = db.changes(_options)
                         .on('paused', (err) => {
-                            vm.$emit('pouchdb-changes-error', err);
+                            if (err) {
+                                vm.$emit('pouchdb-changes-error', {
+                                    db: localDB,
+                                    error: err,
+                                });
+                                return;
+                            }
+                            numPaused += 1;
+                            if (numPaused >= 2) {
+                                vm.$emit('pouchdb-changes-paused', {
+                                    db: localDB,
+                                    paused: true,
+                                });
+                            }
                         })
                         .on('change', (info) => {
-                            vm.$emit('pouchdb-changes-change', info);
+                            vm.$emit('pouchdb-changes-change', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('active', () => {
-                            vm.$emit('pouchdb-changes-active', true);
+                            vm.$emit('pouchdb-changes-active', {
+                                db: localDB,
+                                active: true,
+                            });
                         })
                         .on('denied', (err) => {
-                            vm.$emit('pouchdb-changes-denied', err);
+                            vm.$emit('pouchdb-changes-denied', {
+                                db: localDB,
+                                error: err,
+                            });
                         })
                         .on('complete', (info) => {
-                            vm.$emit('pouchdb-changes-complete', info);
+                            vm.$emit('pouchdb-changes-complete', {
+                                db: localDB,
+                                info: info,
+                            });
                         })
                         .on('error', (err) => {
-                            vm.$emit('pouchdb-changes-error', err);
+                            vm.$emit('pouchdb-changes-error', {
+                                db: localDB,
+                                error: err,
+                            });
                         });
 
                     fetchSession(databases[db]);
@@ -549,6 +578,7 @@
             };
 
             defineReactive(vm, '$pouch', $pouch);
+
             vm.$databases = databases; // Add non-reactive property
 
             let pouchOptions = this.$options.pouch;
