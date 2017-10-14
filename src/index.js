@@ -33,7 +33,7 @@
                     databases[defaultDB].getSession().then((session) => {
                         databases[defaultDB].getUser(session.userCtx.name)
                             .then((userData) => {
-                                let userObj = Object.assign({}, session.userCtx, userData);
+                                let userObj = Object.assign({}, session.userCtx, { displayName: userData.displayname });
                                 resolve({
                                     user: userObj,
                                     hasAccess: true,
@@ -53,7 +53,7 @@
                         .then((user) => {
                             databases[defaultDB].getUser(user.name)
                                 .then((userData) => {
-                                    let userObj = Object.assign({}, user, userData);
+                                    let userObj = Object.assign({}, user, { displayName: userData.displayname });
                                     resolve({
                                         user: userObj,
                                         hasAccess: true,
