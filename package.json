@@ -1,6 +1,6 @@
 {
   "name": "pouch-vue",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
   "scripts": {
@@ -23,13 +23,13 @@
     "src",
     "rollup.config.js"
   ],
-    "keywords": [
-        "pouchdb",
-        "vue",
-        "vue.js",
-        "couchdb",
-        "pouch-vue"
-    ],
+  "keywords": [
+    "pouchdb",
+    "vue",
+    "vue.js",
+    "couchdb",
+    "pouch-vue"
+  ],
   "homepage": "https://github.com/MDSLKTR/pouch-vue",
   "dependencies": {
     "pouchdb-live-find": "^0.4.0"
