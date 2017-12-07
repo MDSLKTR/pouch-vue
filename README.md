@@ -1,5 +1,7 @@
 # Pouch Vue
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/MDSLKTR/pouch-vue.svg)](https://greenkeeper.io/)
+
 ##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though
 
 ## Installation
