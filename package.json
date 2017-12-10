@@ -1,6 +1,6 @@
 {
   "name": "pouch-vue",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
   "scripts": {
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "cross-env": "^5.1.1",
-    "eslint": "^4.12.1",
+    "eslint": "^4.13.0",
     "rollup": "^0.52.1",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-buble": "^0.18.0",

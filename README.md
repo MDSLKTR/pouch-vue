@@ -34,15 +34,15 @@ Then, plug VuePouch into Vue:
 ### $pouch
 
 `$pouch` is made available on all vue instances and implements most of pouchdbs current API (https://pouchdb.com/api.html).
-Default events are mounted on each db you connect to: https://pouchdb.com/api.html#events. When a database is created `pouchdb-db-created` is emitted and `pouchdb-db-destroyed` when it's destroyed.
+Default events are mounted on each db you connect to: https://pouchdb.com/api.html#events. When a database is created `pouchdb-db-created` is emitted and `pouchdb-db-destroyed` when it's destroyed (which you can listen to with `this.$on(EVENT_NAME)`).
 
 #### Methods
 All Methods return a promise and mirror or extend the API from pouchdb.
 
-* `$pouch.getSession()`: Returns the current session if already logged in to the defaultDB.
-* `$pouch.connect(username, password)`: Connects you to the defaultDB and returns the user object on success.
-* `$pouch.disconnect()`: Disconnects you from the defaultDB and clears the session data.
-* `$pouch.createUser(name, password)`: Creates a user in the remote database and starts a new session.
+* `$pouch.getSession(OPTIONAL db)`: Returns the current session if already logged in to the defaultDB or given remote DB.
+* `$pouch.connect(username, password, OPTIONAL db)`: Connects you to the defaultDB or given remote DB and returns the user object on success.
+* `$pouch.disconnect(OPTIONAL db)`: Disconnects you from the defaultDB or given remote DB and clears the session data.
+* `$pouch.createUser(name, password, OPTIONAL db)`: Creates a user in the defaultDB or given remote DB and starts a new session.
 ___
 * `$pouch.destroy(db)`: same as https://pouchdb.com/api.html#delete_database
 * `$pouch.defaults(options)`: same as https://pouchdb.com/api.html#defaults
