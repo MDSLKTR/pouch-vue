@@ -39,7 +39,7 @@
                                     let userObj = Object.assign(
                                         {},
                                         session.userCtx,
-                                        userData,
+                                        userData
                                     );
                                     resolve({
                                         user: userObj,
@@ -68,7 +68,7 @@
                                     let userObj = Object.assign(
                                         {},
                                         user,
-                                        userData,
+                                        userData
                                     );
                                     resolve({
                                         user: userObj,
@@ -231,7 +231,7 @@
                                     return delay * 3;
                                 },
                             },
-                            options,
+                            options
                         ),
                         numPaused = 0;
 
@@ -433,7 +433,7 @@
                                     return delay * 3;
                                 },
                             },
-                            options,
+                            options
                         ),
                         numPaused = 0;
 
@@ -550,7 +550,7 @@
                     let _options = Object.assign(
                         {},
                         { include_docs: true },
-                        options,
+                        options
                     );
 
                     return databases[db].allDocs(_options);
@@ -598,7 +598,7 @@
                         attachment.id,
                         rev ? rev : null,
                         attachment.data,
-                        attachment.type,
+                        attachment.type
                     );
                 },
 
@@ -618,7 +618,7 @@
                     return databases[db].removeAttachment(
                         docId,
                         attachmentId,
-                        docRev,
+                        docRev
                     );
                 },
             };
@@ -675,7 +675,7 @@
                         } else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
                                 databases[databaseParam] = new pouch(
-                                    databaseParam,
+                                    databaseParam
                                 );
                                 login(databases[databaseParam]);
                             }
@@ -707,7 +707,7 @@
                     },
                     {
                         immediate: true,
-                    },
+                    }
                 );
             });
         },
@@ -723,7 +723,7 @@
                     if (ajaxOps.url.includes('_selector')) {
                         ajaxOps.url = ajaxOps.url.replace(
                             'filter=_selector%2F_selector',
-                            'filter=_selector',
+                            'filter=_selector'
                         );
                         ajaxOps.method = 'POST';
                         ajaxOps.body = {
