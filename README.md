@@ -24,7 +24,7 @@ Then, plug VuePouch into Vue:
 ```
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
-      defaultDB: 'removeDbName'  // this is used as a default connect/disconnect database
+      defaultDB: 'remoteDbName'  // this is used as a default connect/disconnect database
       debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings
     });
 ```
