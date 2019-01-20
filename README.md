@@ -183,6 +183,90 @@ module.exports = {
 }
 ```
 
+### TypeScript
+
+main.ts
+```vue 
+
+import { Component, Vue } from 'vue-property-decorator';
+// @ts-ignore
+import PouchDB from 'pouchdb-browser';
+// @ts-ignore
+import lf from 'pouchdb-find';
+// @ts-ignore
+import plf from 'pouchdb-live-find';
+// // @ts-ignore
+
+PouchDB.plugin(lf);
+PouchDB.plugin(plf);
+
+// https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
+
+//    Vue has the constructor type in types/vue.d.ts
+declare module 'vue/types/vue' {
+  // Declare augmentation for Vue
+  interface Vue {
+    $pouch: PouchDB;      // optional if `PouchDB` is available on the global object
+    $defaultDB: string;   // the database to use if none is specified in the pouch setting of the vue component
+ }
+}
+
+Vue.use(require('vue-pouch'),{
+  pouch: PouchDB,
+  defaultDB: 'todos'
+}, )
+
+new Vue({});
+
+```
+Todos.vue
+```vue 
+<template>
+  <div class="todos">
+    <input v-model="message" placeholder="New Todo">
+    <button @click="$pouch.post('todos', {message: message});message=''">Save Todo</button>
+    <div v-for="todo in todos">
+      <input v-model="todo.message" @change="$pouch.put('todos', todo)">
+      <button @click="$pouch.remove('todos', todo)">Remove</button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+// ComponentOptions is declared in types/options.d.ts
+declare module 'vue/types/options' {
+  interface ComponentOptions<V extends Vue> {
+    pouch?: any     // this is where the database will be reactive
+  }
+}
+
+
+@Component({
+  // child components this component calls
+  components: {
+  },
+  props: {
+  },
+  pouch: {
+  // The simplest usage. queries all documents from the "todos" pouch database and assigns them to the "todos" vue property.
+      todos: {/*empty selector*/}
+  }
+})
+
+
+export default class Todos extends Vue {
+  // Lifecycle hooks
+  created () { // Send all documents to the remote database, and stream changes in real-time
+      this.$pouch.sync('todos', 'http://localhost:5984/todos');
+  }
+  // mounted () { },
+  // updated () { },
+  // destroyed () { }
+}
+</script>
+
+```
+
 ### User Authentication
 
 ```vue
