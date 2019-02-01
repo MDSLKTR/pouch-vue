@@ -4,7 +4,7 @@
         defaultDB = null,
         defaultUsername = null,
         defaultPassword = null,
-        databases = {};
+        databases = {},
         fetchOverride = {};
 
     let vuePouch = {
