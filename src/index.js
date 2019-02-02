@@ -5,7 +5,7 @@
         defaultUsername = null,
         defaultPassword = null,
         databases = {},
-        fetchOverride = {};
+        optionsDB = {};
 
     let vuePouch = {
         beforeDestroy() {
@@ -25,7 +25,7 @@
             vm._liveFinds = {};
 
             if (defaultDB) {
-                databases[defaultDB] = new pouch(defaultDB, fetchOverride);
+                databases[defaultDB] = new pouch(defaultDB, optionsDB);
                 registerListeners(databases[defaultDB]);
             }
 
@@ -214,7 +214,7 @@
                         makeInstance(localDB);
                     }
                     if (!databases[remoteDB]) {
-                        makeInstance(remoteDB, fetchOverride);
+                        makeInstance(remoteDB, optionsDB);
                     }
                     if (!defaultDB) {
                         defaultDB = databases[remoteDB];
@@ -749,9 +749,10 @@
             if (options.debug) {
                 pouch.debug.enable(options.debug);
             }
-
-            if (options.fetchOverride) {
-                fetchOverride = options && options.fetchOverride;
+            
+            // include options for creating databases: https://pouchdb.com/api.html#create_database
+            if (options.optionsDB) {
+                optionsDB = options && options.optionsDB;
             }
             
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
