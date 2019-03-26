@@ -9,7 +9,7 @@
 
     let vuePouch = {
         beforeDestroy() {
-            Object.values(this._liveFinds).map(lf => {
+            Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
             });
         },
@@ -22,7 +22,7 @@
             let defineReactive = vue.util.defineReactive,
                 vm = this;
 
-            vm._liveFinds = {};
+            vm._liveFeeds = {};
 
             if (defaultDB) {
                 databases[defaultDB] = new pouch(defaultDB, optionsDB);
@@ -685,11 +685,11 @@
                         if (!db) {
                             return;
                         }
-                        if (vm._liveFinds[key]) {
-                            vm._liveFinds[key].cancel();
+                        if (vm._liveFeeds[key]) {
+                            vm._liveFeeds[key].cancel();
                         }
                         let aggregateCache = [];
-                        vm._liveFinds[key] = db
+                        vm._liveFeeds[key] = db
                             .liveFind({
                                 selector: selector,
                                 sort: sort,
