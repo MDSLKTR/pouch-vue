@@ -195,7 +195,8 @@ import PouchDB from 'pouchdb-browser';
 import lf from 'pouchdb-find';
 // @ts-ignore
 import plf from 'pouchdb-live-find';
-// // @ts-ignore
+// @ts-ignore
+import PouchVue from 'pouchVue';
 
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
@@ -211,7 +212,7 @@ declare module 'vue/types/vue' {
  }
 }
 
-Vue.use(require('vue-pouch'),{
+Vue.use(PouchVue,{
   pouch: PouchDB,
   defaultDB: 'todos'
 }, )
