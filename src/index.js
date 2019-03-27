@@ -690,6 +690,8 @@
                             vm._liveFeeds[key].cancel();
                         }
                         let aggregateCache = [];
+
+                        // the LiveFind plugin returns a liveFeed object 
                         vm._liveFeeds[key] = db
                             .liveFind({
                                 selector: selector,

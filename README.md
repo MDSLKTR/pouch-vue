@@ -184,6 +184,7 @@ module.exports = {
 ```
 
 ### TypeScript
+TypeScript example with a TypeScript file and a Single File Component
 
 main.ts
 ```vue 
@@ -198,6 +199,7 @@ import plf from 'pouchdb-live-find';
 // @ts-ignore
 import PouchVue from 'pouchVue';
 
+// PouchDB plugins: pouchdb-find (included in the monorepo) and LiveFind (external plugin)
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
 
