@@ -8,6 +8,7 @@
         optionsDB = {};
 
     let vuePouch = {
+        // lifecycle hooks for mixin
         beforeDestroy() {
             Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
