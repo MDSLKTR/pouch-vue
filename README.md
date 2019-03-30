@@ -25,7 +25,7 @@ Then, plug VuePouch into Vue:
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'remoteDbName',  // this is used as a default connect/disconnect database
-      debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings - deprecated with PouchDB 7.0      
+      debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings (will be a separate Plugin in PouchDB 7.0)
     });
 ```
 
@@ -187,7 +187,7 @@ module.exports = {
 TypeScript example with a TypeScript file and a Single File Component
 
 main.ts
-```vue 
+```vue
 
 import { Component, Vue } from 'vue-property-decorator';
 // @ts-ignore
@@ -223,7 +223,7 @@ new Vue({});
 
 ```
 Todos.vue
-```vue 
+```vue
 <template>
   <div class="todos">
     <input v-model="message" placeholder="New Todo">

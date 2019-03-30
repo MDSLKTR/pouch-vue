@@ -169,7 +169,7 @@
                     });
                 },
 
-                destroy: function destroy(db) {
+                destroy(db = databases[defaultDB]) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -181,11 +181,11 @@
                     });
                 },
 
-                defaults: function defaults(options) {
+                defaults(options = {}) {
                     pouch.defaults(options);
                 },
 
-                close: function close(db) {
+                close(db = databases[defaultDB]) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -197,8 +197,12 @@
                     });
                 },
 
-                getSession() {
-                    if (!databases[defaultDB]._remote) {
+                getSession(db = databases[defaultDB]) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    if (!db._remote) {
                         return new Promise(resolve => {
                             resolve({
                                 message: 'database is not remote',
@@ -691,7 +695,7 @@
                         }
                         let aggregateCache = [];
 
-                        // the LiveFind plugin returns a liveFeed object 
+                        // the LiveFind plugin returns a liveFeed object
                         vm._liveFeeds[key] = db
                             .liveFind({
                                 selector: selector,
@@ -752,12 +756,12 @@
             if (options.debug) {
                 pouch.debug.enable(options.debug);
             }
-            
+
             // include options for creating databases: https://pouchdb.com/api.html#create_database
             if (options.optionsDB) {
                 optionsDB = options && options.optionsDB;
             }
-            
+
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
     };
