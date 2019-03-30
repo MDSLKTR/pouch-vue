@@ -1,5 +1,7 @@
 # Pouch Vue
 
+## This Plugin is in maintenance mode due to low availability my end, which means new features will only get added by PRs but bugs will still be fixed in a decent time frame
+
 ##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though
 
 ## Installation
