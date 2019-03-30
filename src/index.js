@@ -4,11 +4,13 @@
         defaultDB = null,
         defaultUsername = null,
         defaultPassword = null,
-        databases = {};
+        databases = {},
+        optionsDB = {};
 
     let vuePouch = {
+        // lifecycle hooks for mixin
         beforeDestroy() {
-            Object.values(this._liveFinds).map(lf => {
+            Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
             });
         },
@@ -21,10 +23,10 @@
             let defineReactive = vue.util.defineReactive,
                 vm = this;
 
-            vm._liveFinds = {};
+            vm._liveFeeds = {};
 
             if (defaultDB) {
-                databases[defaultDB] = new pouch(defaultDB);
+                databases[defaultDB] = new pouch(defaultDB, optionsDB);
                 registerListeners(databases[defaultDB]);
             }
 
@@ -85,8 +87,8 @@
                 });
             }
 
-            function makeInstance(db) {
-                databases[db] = new pouch(db);
+            function makeInstance(db, opts = {}) {
+                databases[db] = new pouch(db, opts);
                 registerListeners(databases[db]);
             }
 
@@ -213,7 +215,7 @@
                         makeInstance(localDB);
                     }
                     if (!databases[remoteDB]) {
-                        makeInstance(remoteDB);
+                        makeInstance(remoteDB, optionsDB);
                     }
                     if (!defaultDB) {
                         defaultDB = databases[remoteDB];
@@ -684,11 +686,13 @@
                         if (!db) {
                             return;
                         }
-                        if (vm._liveFinds[key]) {
-                            vm._liveFinds[key].cancel();
+                        if (vm._liveFeeds[key]) {
+                            vm._liveFeeds[key].cancel();
                         }
                         let aggregateCache = [];
-                        vm._liveFinds[key] = db
+
+                        // the LiveFind plugin returns a liveFeed object 
+                        vm._liveFeeds[key] = db
                             .liveFind({
                                 selector: selector,
                                 sort: sort,
@@ -748,7 +752,12 @@
             if (options.debug) {
                 pouch.debug.enable(options.debug);
             }
-
+            
+            // include options for creating databases: https://pouchdb.com/api.html#create_database
+            if (options.optionsDB) {
+                optionsDB = options && options.optionsDB;
+            }
+            
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
     };
