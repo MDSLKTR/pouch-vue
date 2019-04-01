@@ -145,9 +145,7 @@
                         .putUser(username, {
                             metadata
                         })
-                        .then(() => {
-                            return vm.$pouch.putUser(username, metadata, db);
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -181,9 +179,7 @@
                 changeUsername (oldUsername, newUsername, db = databases[ defaultDB ]) {
                     return db
                         .changeUsername(oldUsername, newUsername)
-                        .then(() => {
-                            return vm.$pouch.changeUsername(oldUsername, newUsername, db);
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -193,9 +189,7 @@
                 signUpAdmin (adminUsername, adminPassword, db = databases[ defaultDB ]) {
                     return db
                         .signUpAdmin(adminUsername, adminPassword)
-                        .then(() => {
-                            return vm.$pouch.signUpAdmin(adminUsername, adminPassword, db)
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -205,9 +199,7 @@
                 deleteAdmin (adminUsername, db = databases[ defaultDB ]) {
                     return db
                         .deleteAdmin(adminUsername)
-                        .then(() => {
-                            return vm.$pouch.deleteAdmin(adminUsername, db)
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
