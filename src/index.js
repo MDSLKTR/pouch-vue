@@ -155,9 +155,7 @@
                 deleteUser (username, db = databases[ defaultDB ]) {
                     return db
                         .deleteUser(username)
-                        .then(() => {
-                            return vm.$pouch.deleteUser(username, db);
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -167,9 +165,7 @@
                 changePassword (username, password, db = databases[ defaultDB ]) {
                     return db
                         .changePassword(username, password)
-                        .then(() => {
-                            return vm.$pouch.changePassword(username, password, db);
-                        })
+                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
