@@ -166,6 +166,54 @@
                             });
                         });
                 },
+                changePassword (username, password, db = databases[ defaultDB ]) {
+                    return db
+                        .changePassword(username, password)
+                        .then(() => {
+                            return vm.$pouch.changePassword(username, password, db);
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                changeUsername (oldUsername, newUsername, db = databases[ defaultDB ]) {
+                    return db
+                        .changeUsername(oldUsername, newUsername)
+                        .then(() => {
+                            return vm.$pouch.changeUsername(oldUsername, newUsername, db);
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                signUpAdmin (adminUsername, adminPassword, db = databases[ defaultDB ]) {
+                    return db
+                        .signUpAdmin(adminUsername, adminPassword)
+                        .then(() => {
+                            return vm.$pouch.signUpAdmin(adminUsername, adminPassword, db)
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                deleteAdmin (adminUsername, db = databases[ defaultDB ]) {
+                    return db
+                        .deleteAdmin(adminUsername)
+                        .then(() => {
+                            return vm.$pouch.deleteAdmin(adminUsername, db)
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
                 disconnect(db = databases[defaultDB]) {
                     return new Promise(resolve => {
                         defaultUsername = null;
