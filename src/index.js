@@ -145,7 +145,6 @@
                         .putUser(username, {
                             metadata
                         })
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -155,7 +154,6 @@
                 deleteUser (username, db = databases[ defaultDB ]) {
                     return db
                         .deleteUser(username)
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -165,7 +163,6 @@
                 changePassword (username, password, db = databases[ defaultDB ]) {
                     return db
                         .changePassword(username, password)
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -175,7 +172,6 @@
                 changeUsername (oldUsername, newUsername, db = databases[ defaultDB ]) {
                     return db
                         .changeUsername(oldUsername, newUsername)
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -185,7 +181,6 @@
                 signUpAdmin (adminUsername, adminPassword, db = databases[ defaultDB ]) {
                     return db
                         .signUpAdmin(adminUsername, adminPassword)
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
@@ -195,7 +190,6 @@
                 deleteAdmin (adminUsername, db = databases[ defaultDB ]) {
                     return db
                         .deleteAdmin(adminUsername)
-                        .then(response => response)
                         .catch(error => {
                             return new Promise(resolve => {
                                 resolve(error);
