@@ -140,6 +140,32 @@
                             });
                         });
                 },
+                putUser (username, metadata = {}, db = databases[ defaultDB ]) {
+                    return db
+                        .putUser(username, {
+                            metadata
+                        })
+                        .then(() => {
+                            return vm.$pouch.putUser(username, metadata, db);
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                deleteUser (username, db = databases[ defaultDB ]) {
+                    return db
+                        .deleteUser(username)
+                        .then(() => {
+                            return vm.$pouch.deleteUser(username, db);
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
                 disconnect(db = databases[defaultDB]) {
                     return new Promise(resolve => {
                         defaultUsername = null;
