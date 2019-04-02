@@ -140,6 +140,62 @@
                             });
                         });
                 },
+                putUser (username, metadata = {}, db = databases[ defaultDB ]) {
+                    return db
+                        .putUser(username, {
+                            metadata
+                        })
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                deleteUser (username, db = databases[ defaultDB ]) {
+                    return db
+                        .deleteUser(username)
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                changePassword (username, password, db = databases[ defaultDB ]) {
+                    return db
+                        .changePassword(username, password)
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                changeUsername (oldUsername, newUsername, db = databases[ defaultDB ]) {
+                    return db
+                        .changeUsername(oldUsername, newUsername)
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                signUpAdmin (adminUsername, adminPassword, db = databases[ defaultDB ]) {
+                    return db
+                        .signUpAdmin(adminUsername, adminPassword)
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
+                deleteAdmin (adminUsername, db = databases[ defaultDB ]) {
+                    return db
+                        .deleteAdmin(adminUsername)
+                        .catch(error => {
+                            return new Promise(resolve => {
+                                resolve(error);
+                            });
+                        });
+                },
                 disconnect(db = databases[defaultDB]) {
                     return new Promise(resolve => {
                         defaultUsername = null;
