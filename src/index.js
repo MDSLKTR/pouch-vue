@@ -499,7 +499,7 @@
                         ),
                         numPaused = 0;
 
-                    let changes = db
+                    let changes = databases[db]
                         .changes(_options)
                         .on('paused', err => {
                             if (err) {
