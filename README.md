@@ -203,27 +203,24 @@ import lf from 'pouchdb-find';
 // @ts-ignore
 import plf from 'pouchdb-live-find';
 // @ts-ignore
-import PouchVue from 'pouchVue';
+import auth from 'pouchdb-authentication';
+
+import pouchVue from 'pouch-vue';
 
 // PouchDB plugins: pouchdb-find (included in the monorepo) and LiveFind (external plugin)
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
 
-// https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
-
-//    Vue has the constructor type in types/vue.d.ts
-declare module 'vue/types/vue' {
-  // Declare augmentation for Vue
-  interface Vue {
-    $pouch: PouchDB;      // optional if `PouchDB` is available on the global object
-    $defaultDB: string;   // the database to use if none is specified in the pouch setting of the vue component
- }
-}
-
-Vue.use(PouchVue,{
+Vue.use(pouchVue,{
   pouch: PouchDB,
-  defaultDB: 'todos'
-}, )
+  defaultDB: 'todos',
+  optionsDB: {
+    fetch: function (url:any, opts:any) {
+        opts.credentials = 'include';
+        return PouchDB.fetch(url, opts);
+    }    
+  }
+})
 
 new Vue({});
 
@@ -242,27 +239,13 @@ Todos.vue
 </template>
 
 <script lang="ts">
-// ComponentOptions is declared in types/options.d.ts
-declare module 'vue/types/options' {
-  interface ComponentOptions<V extends Vue> {
-    pouch?: any     // this is where the database will be reactive
-  }
-}
-
 
 @Component({
-  // child components this component calls
-  components: {
-  },
-  props: {
-  },
   pouch: {
   // The simplest usage. queries all documents from the "todos" pouch database and assigns them to the "todos" vue property.
       todos: {/*empty selector*/}
   }
 })
-
-
 export default class Todos extends Vue {
   // Lifecycle hooks
   created () { // Send all documents to the remote database, and stream changes in real-time
