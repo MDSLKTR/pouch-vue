@@ -140,7 +140,7 @@
                             });
                         });
                 },
-                putUser (username, metadata = {}, db = databases[ defaultDB ]) {
+                putUser (username, db = databases[ defaultDB ], metadata = {}) {
                     return db
                         .putUser(username, {
                             metadata
