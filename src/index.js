@@ -226,10 +226,6 @@
                 },
 
                 destroy(db = databases[defaultDB]) {
-                    if (!databases[db]) {
-                        makeInstance(db);
-                    }
-
                     return databases[db].destroy().then(() => {
                         if (db !== defaultDB) {
                             delete databases[db];
@@ -241,7 +237,7 @@
                     pouch.defaults(options);
                 },
 
-                close(db = databases[defaultDB]) {
+                close(db) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -254,10 +250,6 @@
                 },
 
                 getSession(db = databases[defaultDB]) {
-                    if (!databases[db]) {
-                        makeInstance(db);
-                    }
-
                     if (!db._remote) {
                         return new Promise(resolve => {
                             resolve({
