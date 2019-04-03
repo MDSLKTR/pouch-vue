@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && tsc",
     "prepublish": "npm run build",
     "prepublishOnly": "npm run build",
     "prepare": "npm run build"
@@ -33,7 +33,8 @@
   ],
   "homepage": "https://github.com/MDSLKTR/pouch-vue",
   "dependencies": {
-    "pouchdb-live-find": "^0.4.0"
+    "pouchdb-live-find": "^0.4.0",
+    "typescript": "^3.4.1"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
