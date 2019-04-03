@@ -27,6 +27,7 @@ Then, plug VuePouch into Vue:
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'remoteDbName',  // this is used as a default connect/disconnect database
+      optionDB: {}, // this is used to include a custom fetch() method (see TypeScript example)
       debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings (will be a separate Plugin in PouchDB 7.0)
     });
 ```
@@ -45,7 +46,7 @@ All Methods return a promise and mirror or extend the API from pouchdb.
 * `$pouch.connect(username, password, OPTIONAL db)`: Connects you to the defaultDB or given remote DB and returns the user object on success.
 * `$pouch.disconnect(OPTIONAL db)`: Disconnects you from the defaultDB or given remote DB and clears the session data.
 * `$pouch.createUser(name, password, OPTIONAL db)`: Creates a user in the defaultDB or given remote DB and starts a new session.
-* `$pouch.putUser(name, OPTIONAL metadata, OPTIONAL db)`: Update a user in the defaultDB or given remote DB and returns the user object on success. [pouchdb-authentication API : putUser](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbputuserusername-opts--callback)
+* `$pouch.putUser(name, OPTIONAL db, OPTIONAL metadata)`: Update a user in the defaultDB or given remote DB and returns the user object on success. [pouchdb-authentication API : putUser](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbputuserusername-opts--callback)
 * `$pouch.deleteUser(name, OPTIONAL db)`: Delete a user in the defaultDB or given remote DB and returns response. [pouchdb-authentication API : deleteUser](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbdeleteuserusername-opts--callback)
 * `$pouch.signUpAdmin(adminUsername, adminPassword, OPTIONAL db)`: Sign up a new admin and returns response. [pouchdb-authentication API : signUpAdmin](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbsignupadminusername-password--options--callback)
 * `$pouch.deleteAdmin(name, OPTIONAL db)`:Delete an admin and returns response. [pouchdb-authentication API : deleteAdmin](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbdeleteadminusername-opts--callback)
@@ -190,7 +191,8 @@ module.exports = {
 ```
 
 ### TypeScript
-TypeScript example with a TypeScript file and a Single File Component
+TypeScript example with a TypeScript file to include the pouch-vue plugin and a Single File Component
+using the plugin.
 
 main.ts
 ```vue
@@ -203,27 +205,25 @@ import lf from 'pouchdb-find';
 // @ts-ignore
 import plf from 'pouchdb-live-find';
 // @ts-ignore
-import PouchVue from 'pouchVue';
+import auth from 'pouchdb-authentication';
+
+import pouchVue from 'pouch-vue';
 
 // PouchDB plugins: pouchdb-find (included in the monorepo) and LiveFind (external plugin)
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
+PouchDB.plugin(auth);
 
-// https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
-
-//    Vue has the constructor type in types/vue.d.ts
-declare module 'vue/types/vue' {
-  // Declare augmentation for Vue
-  interface Vue {
-    $pouch: PouchDB;      // optional if `PouchDB` is available on the global object
-    $defaultDB: string;   // the database to use if none is specified in the pouch setting of the vue component
- }
-}
-
-Vue.use(PouchVue,{
+Vue.use(pouchVue,{
   pouch: PouchDB,
-  defaultDB: 'todos'
-}, )
+  defaultDB: 'todos',
+  optionsDB: {
+    fetch: function (url:any, opts:any) {
+        opts.credentials = 'include';
+        return PouchDB.fetch(url, opts);
+    }    
+  }
+})
 
 new Vue({});
 
@@ -242,27 +242,13 @@ Todos.vue
 </template>
 
 <script lang="ts">
-// ComponentOptions is declared in types/options.d.ts
-declare module 'vue/types/options' {
-  interface ComponentOptions<V extends Vue> {
-    pouch?: any     // this is where the database will be reactive
-  }
-}
-
 
 @Component({
-  // child components this component calls
-  components: {
-  },
-  props: {
-  },
   pouch: {
   // The simplest usage. queries all documents from the "todos" pouch database and assigns them to the "todos" vue property.
       todos: {/*empty selector*/}
   }
 })
-
-
 export default class Todos extends Vue {
   // Lifecycle hooks
   created () { // Send all documents to the remote database, and stream changes in real-time
