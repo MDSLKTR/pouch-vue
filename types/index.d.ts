@@ -2,7 +2,7 @@ declare module "pouch-vue" {
   import _Vue, { PluginFunction, PluginObject, ComponentOptions } from 'vue'
   import PouchDB from 'pouchdb-core';
   
-  interface PouchMethods {
+  interface PouchVueMethods {
     connect(username: string, password: string, db: any): any;
     createUser(username: string, password: string, db: any): any;
     putUser (username: string, db: any, metadata?: {}): any;
@@ -54,7 +54,7 @@ declare module "pouch-vue" {
   module 'vue/types/vue' {
     // Declare augmentation for Vue
     interface Vue {
-      $pouch: PouchMethods;
+      $pouch: PouchVueMethods;
     }
   }
 
