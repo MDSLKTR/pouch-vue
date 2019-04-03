@@ -504,7 +504,7 @@
                         .on('paused', err => {
                             if (err) {
                                 vm.$emit('pouchdb-changes-error', {
-                                    db: localDB,
+                                    db: db,
                                     error: err,
                                 });
                                 return;
@@ -512,38 +512,38 @@
                             numPaused += 1;
                             if (numPaused >= 2) {
                                 vm.$emit('pouchdb-changes-paused', {
-                                    db: localDB,
+                                    db: db,
                                     paused: true,
                                 });
                             }
                         })
                         .on('change', info => {
                             vm.$emit('pouchdb-changes-change', {
-                                db: localDB,
+                                db: db,
                                 info: info,
                             });
                         })
                         .on('active', () => {
                             vm.$emit('pouchdb-changes-active', {
-                                db: localDB,
+                                db: db,
                                 active: true,
                             });
                         })
                         .on('denied', err => {
                             vm.$emit('pouchdb-changes-denied', {
-                                db: localDB,
+                                db: db,
                                 error: err,
                             });
                         })
                         .on('complete', info => {
                             vm.$emit('pouchdb-changes-complete', {
-                                db: localDB,
+                                db: db,
                                 info: info,
                             });
                         })
                         .on('error', err => {
                             vm.$emit('pouchdb-changes-error', {
-                                db: localDB,
+                                db: db,
                                 error: err,
                             });
                         });
