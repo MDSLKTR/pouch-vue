@@ -270,7 +270,7 @@
                     return fetchSession();
                 },
 
-                sync(localDB, remoteDB, options) {
+                sync(localDB, remoteDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }

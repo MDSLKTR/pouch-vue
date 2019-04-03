@@ -16,7 +16,7 @@ declare module "pouch-vue" {
     defaults(options?: {}): any;
     close(db: any): any;
     getSession(db: any): any;
-    sync(localDB: any, remoteDB: any, options: {}): any;
+    sync(localDB: any, remoteDB: any, options?: {}): any;
     push(localDB: any, remoteDB: any, options?: {}): any;
     pull(localDB: any, remoteDB: any, options?: {}): any;
     changes(db: any, options?: {}): any;
