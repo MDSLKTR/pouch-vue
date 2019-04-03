@@ -3,6 +3,7 @@
   "version": "0.1.37",
   "description": "PouchDB bindings for Vue.js",
   "main": "lib/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build",
