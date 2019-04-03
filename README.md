@@ -27,6 +27,7 @@ Then, plug VuePouch into Vue:
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'remoteDbName',  // this is used as a default connect/disconnect database
+      optionDB: {}, // this is used to include a custom fetch() method (see TypeScript example)
       debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings (will be a separate Plugin in PouchDB 7.0)
     });
 ```
@@ -190,7 +191,8 @@ module.exports = {
 ```
 
 ### TypeScript
-TypeScript example with a TypeScript file and a Single File Component
+TypeScript example with a TypeScript file to include the pouch-vue plugin and a Single File Component
+using the plugin.
 
 main.ts
 ```vue
@@ -210,6 +212,7 @@ import pouchVue from 'pouch-vue';
 // PouchDB plugins: pouchdb-find (included in the monorepo) and LiveFind (external plugin)
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
+PouchDB.plugin(auth);
 
 Vue.use(pouchVue,{
   pouch: PouchDB,
