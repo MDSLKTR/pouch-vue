@@ -62,7 +62,7 @@
                 return new Promise(resolve => {
 
                     db
-                        .login(defaultUsername, defaultPassword)
+                        .logIn(defaultUsername, defaultPassword)
                         .then(user => {
                             db
                                 .getUser(user.name)
@@ -130,7 +130,7 @@
                 },
                 createUser(username, password, db = databases[defaultDB]) {
                     return db
-                        .signup(username, password)
+                        .signUp(username, password)
                         .then(() => {
                             return vm.$pouch.connect(username, password, db);
                         })
@@ -211,7 +211,7 @@
                         }
 
                         db
-                            .logout()
+                            .logOut()
                             .then(res => {
                                 resolve({
                                     ok: res.ok,
@@ -225,7 +225,11 @@
                     });
                 },
 
-                destroy(db = databases[defaultDB]) {
+                destroy(db) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
                     return databases[db].destroy().then(() => {
                         if (db !== defaultDB) {
                             delete databases[db];
