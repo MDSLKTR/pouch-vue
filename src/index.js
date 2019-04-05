@@ -274,7 +274,7 @@
                         makeInstance(remoteDB, optionsDB);
                     }
                     if (!defaultDB) {
-                        defaultDB = databases[remoteDB];
+                        defaultDB = remoteDB;
                     }
 
                     let _options = Object.assign(
