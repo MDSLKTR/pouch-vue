@@ -1,3 +1,5 @@
+import { isRemote } from 'pouchdb-utils';
+
 (function() {
     let vue = null,
         pouch = null,
