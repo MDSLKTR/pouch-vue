@@ -1,8 +1,8 @@
 declare module "pouch-vue" {
-  import _Vue, { PluginFunction, PluginObject, ComponentOptions } from 'vue'
+  import _Vue, { PluginObject, ComponentOptions } from 'vue'
   import PouchDB from 'pouchdb-core';
   
-  interface PouchVueMethods {
+  interface PublicPouchVueMethods {
     connect(username: string, password: string, db?: any): any;
     createUser(username: string, password: string, db?: any): any;
     putUser (username: string, metadata?: {}, db?: any): any;
@@ -43,10 +43,11 @@ declare module "pouch-vue" {
   interface PouchVueOptions {
     pouch: PouchDB.Static;
     defaultDB: string;
+    debug: string;
     optionsDB: any;
   }
   
-  export const install: PluginFunction<PouchVueOptions>;
+  export var {install, mixin} : PluginObject<PouchVueOptions>;
 
   // https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
 
@@ -54,7 +55,7 @@ declare module "pouch-vue" {
   module 'vue/types/vue' {
     // Declare augmentation for Vue
     interface Vue {
-      $pouch: PouchVueMethods;
+      $pouch: PublicPouchVueMethods;
     }
   }
 
@@ -65,13 +66,3 @@ declare module "pouch-vue" {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
