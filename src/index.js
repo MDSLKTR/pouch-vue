@@ -114,7 +114,7 @@
                         defaultUsername = username;
                         defaultPassword = password;
 
-                        if (!db._remote) {
+                        if (!isRemote(db)) {
                             resolve({
                                 message: 'database is not remote',
                                 error: 'bad request',
@@ -201,7 +201,7 @@
                         defaultUsername = null;
                         defaultPassword = null;
 
-                        if (!db._remote) {
+                        if (!isRemote(db)) {
                             resolve({
                                 message: 'database is not remote',
                                 error: 'bad request',
@@ -254,7 +254,7 @@
                 },
 
                 getSession(db = databases[defaultDB]) {
-                    if (!db._remote) {
+                    if (!isRemote(db)) {
                         return new Promise(resolve => {
                             resolve({
                                 message: 'database is not remote',
