@@ -499,38 +499,10 @@ import { isRemote } from 'pouchdb-utils';
 
                     let changes = databases[db]
                         .changes(_options)
-                        .on('paused', err => {
-                            if (err) {
-                                vm.$emit('pouchdb-changes-error', {
-                                    db: db,
-                                    error: err,
-                                });
-                                return;
-                            }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
-                                vm.$emit('pouchdb-changes-paused', {
-                                    db: db,
-                                    paused: true,
-                                });
-                            }
-                        })
                         .on('change', info => {
                             vm.$emit('pouchdb-changes-change', {
                                 db: db,
                                 info: info,
-                            });
-                        })
-                        .on('active', () => {
-                            vm.$emit('pouchdb-changes-active', {
-                                db: db,
-                                active: true,
-                            });
-                        })
-                        .on('denied', err => {
-                            vm.$emit('pouchdb-changes-denied', {
-                                db: db,
-                                error: err,
                             });
                         })
                         .on('complete', info => {
