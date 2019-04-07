@@ -198,13 +198,10 @@ main.ts
 ```vue
 
 import { Component, Vue } from 'vue-property-decorator';
-// @ts-ignore
 import PouchDB from 'pouchdb-browser';
-// @ts-ignore
 import lf from 'pouchdb-find';
 // @ts-ignore
 import plf from 'pouchdb-live-find';
-// @ts-ignore
 import auth from 'pouchdb-authentication';
 
 import pouchVue from 'pouch-vue';
