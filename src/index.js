@@ -747,36 +747,11 @@ import { isRemote } from 'pouchdb-utils';
         },
     };
 
-    function installSelectorReplicationPlugin() {
-        // This plugin enables selector-based replication
-        pouch.plugin(pouch => {
-            let oldReplicate = pouch.replicate;
-            pouch.replicate = (source, target, repOptions) => {
-                let sourceAjax = source._ajax;
-                source._ajax = (ajaxOps, callback) => {
-                    if (ajaxOps.url.includes('_selector')) {
-                        ajaxOps.url = ajaxOps.url.replace(
-                            'filter=_selector%2F_selector',
-                            'filter=_selector'
-                        );
-                        ajaxOps.method = 'POST';
-                        ajaxOps.body = {
-                            selector: repOptions.selector,
-                        };
-                    }
-                    return sourceAjax(ajaxOps, callback);
-                };
-                return oldReplicate(source, target, repOptions);
-            };
-        });
-    }
-
     let api = {
         mixin: vuePouch,
         install: (Vue, options) => {
             vue = Vue;
             pouch = (options && options.pouch) || PouchDB;
-            installSelectorReplicationPlugin();
             defaultDB = (options && options.defaultDB) || '';
 
             // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
