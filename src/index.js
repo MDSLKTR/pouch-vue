@@ -1,3 +1,5 @@
+import { isRemote } from 'pouchdb-utils';
+
 (function() {
     let vue = null,
         pouch = null,
@@ -62,7 +64,7 @@
                 return new Promise(resolve => {
 
                     db
-                        .login(defaultUsername, defaultPassword)
+                        .logIn(defaultUsername, defaultPassword)
                         .then(user => {
                             db
                                 .getUser(user.name)
@@ -114,7 +116,7 @@
                         defaultUsername = username;
                         defaultPassword = password;
 
-                        if (!db._remote) {
+                        if (!isRemote(db)) {
                             resolve({
                                 message: 'database is not remote',
                                 error: 'bad request',
@@ -130,7 +132,7 @@
                 },
                 createUser(username, password, db = databases[defaultDB]) {
                     return db
-                        .signup(username, password)
+                        .signUp(username, password)
                         .then(() => {
                             return vm.$pouch.connect(username, password, db);
                         })
@@ -201,7 +203,7 @@
                         defaultUsername = null;
                         defaultPassword = null;
 
-                        if (!db._remote) {
+                        if (!isRemote(db)) {
                             resolve({
                                 message: 'database is not remote',
                                 error: 'bad request',
@@ -211,7 +213,7 @@
                         }
 
                         db
-                            .logout()
+                            .logOut()
                             .then(res => {
                                 resolve({
                                     ok: res.ok,
@@ -225,7 +227,7 @@
                     });
                 },
 
-                destroy(db = databases[defaultDB]) {
+                destroy(db) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -241,7 +243,7 @@
                     pouch.defaults(options);
                 },
 
-                close(db = databases[defaultDB]) {
+                close(db) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -254,11 +256,7 @@
                 },
 
                 getSession(db = databases[defaultDB]) {
-                    if (!databases[db]) {
-                        makeInstance(db);
-                    }
-
-                    if (!db._remote) {
+                    if (!isRemote(db)) {
                         return new Promise(resolve => {
                             resolve({
                                 message: 'database is not remote',
@@ -270,7 +268,7 @@
                     return fetchSession();
                 },
 
-                sync(localDB, remoteDB, options) {
+                sync(localDB, remoteDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -278,7 +276,7 @@
                         makeInstance(remoteDB, optionsDB);
                     }
                     if (!defaultDB) {
-                        defaultDB = databases[remoteDB];
+                        defaultDB = remoteDB;
                     }
 
                     let _options = Object.assign(
@@ -499,51 +497,23 @@
                         ),
                         numPaused = 0;
 
-                    let changes = db
+                    let changes = databases[db]
                         .changes(_options)
-                        .on('paused', err => {
-                            if (err) {
-                                vm.$emit('pouchdb-changes-error', {
-                                    db: localDB,
-                                    error: err,
-                                });
-                                return;
-                            }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
-                                vm.$emit('pouchdb-changes-paused', {
-                                    db: localDB,
-                                    paused: true,
-                                });
-                            }
-                        })
                         .on('change', info => {
                             vm.$emit('pouchdb-changes-change', {
-                                db: localDB,
+                                db: db,
                                 info: info,
-                            });
-                        })
-                        .on('active', () => {
-                            vm.$emit('pouchdb-changes-active', {
-                                db: localDB,
-                                active: true,
-                            });
-                        })
-                        .on('denied', err => {
-                            vm.$emit('pouchdb-changes-denied', {
-                                db: localDB,
-                                error: err,
                             });
                         })
                         .on('complete', info => {
                             vm.$emit('pouchdb-changes-complete', {
-                                db: localDB,
+                                db: db,
                                 info: info,
                             });
                         })
                         .on('error', err => {
                             vm.$emit('pouchdb-changes-error', {
-                                db: localDB,
+                                db: db,
                                 error: err,
                             });
                         });
@@ -807,20 +777,24 @@
             vue = Vue;
             pouch = (options && options.pouch) || PouchDB;
             installSelectorReplicationPlugin();
-            defaultDB = options && options.defaultDB;
+            defaultDB = (options && options.defaultDB) || '';
 
-            if (options.debug) {
+            // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
+            // var pouchdbDebug = require('pouchdb-debug');
+            // PouchDB.plugin(pouchdbDebug);
+            if (options && options.debug && options.debug === '*') {
                 pouch.debug.enable(options.debug);
             }
 
             // include options for creating databases: https://pouchdb.com/api.html#create_database
-            if (options.optionsDB) {
+            if (options && options.optionsDB) {
                 optionsDB = options && options.optionsDB;
             }
 
+            // mixin https://github.com/vuejs/vue/blob/dev/src/core/global-api/mixin.js
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
-    };
-
+    };    
+    
     module.exports = api;
 })();
