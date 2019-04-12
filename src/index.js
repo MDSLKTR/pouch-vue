@@ -11,7 +11,7 @@ import { isRemote } from 'pouchdb-utils';
 
     let vuePouch = {
         // lifecycle hooks for mixin
-        function beforeCreate(){
+        beforeCreate(){
             var pouchOptions = this.$options.pouch;
   
             if (!pouchOptions) {
