@@ -11,6 +11,41 @@ import { isRemote } from 'pouchdb-utils';
 
     let vuePouch = {
         // lifecycle hooks for mixin
+        function beforeCreate(){
+            var pouchOptions = this.$options.pouch;
+  
+            if (!pouchOptions) {
+                return;
+            }
+
+            let oldDataFunc = this.$options.data;      
+
+            this.$options.data= function(vm) {
+                // get the Vue instance's data object from the constructor
+                var plainObject = oldDataFunc.call(vm, vm);
+
+                // map the pouch databases to an object in the Vue instance's data
+                Object.keys(pouchOptions).map(function (key) {
+
+                    var pouchFn = pouchOptions[key];
+                    if (typeof pouchFn !== 'function') {
+                        pouchFn = function () {
+                            return pouchOptions[key];
+                        };
+                    }
+
+                  if (typeof plainObject[key] === 'undefined') {
+                      plainObject[key] = null;
+                  }
+                
+                });
+
+                // return the Vue instance's data with the additional pouch objects
+                // the Vue instance's data will be made reactive before the 'created' lifecycle hook runs
+                return plainObject;
+            }
+
+          },        
         beforeDestroy() {
             Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
