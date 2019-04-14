@@ -18,6 +18,11 @@ import { isRemote } from 'pouchdb-utils';
                 return;
             }
 
+            if(!this.$options.data)
+            {
+                this.$options.data = function () { return { }}
+            }
+
             let oldDataFunc = this.$options.data;      
 
             this.$options.data= function(vm) {
