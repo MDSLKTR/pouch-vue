@@ -18,6 +18,10 @@ import { isRemote } from 'pouchdb-utils';
                 return;
             }
 
+            if (typeof pouchOptions === 'function') {
+                pouchOptions = pouchOptions();
+            }
+
             if(!this.$options.data)
             {
                 this.$options.data = function () { return { }}
@@ -31,18 +35,9 @@ import { isRemote } from 'pouchdb-utils';
 
                 // map the pouch databases to an object in the Vue instance's data
                 Object.keys(pouchOptions).map(function (key) {
-
-                    var pouchFn = pouchOptions[key];
-                    if (typeof pouchFn !== 'function') {
-                        pouchFn = function () {
-                            return pouchOptions[key];
-                        };
-                    }
-
                   if (typeof plainObject[key] === 'undefined') {
                       plainObject[key] = null;
                   }
-                
                 });
 
                 // return the Vue instance's data with the additional pouch objects
@@ -50,20 +45,14 @@ import { isRemote } from 'pouchdb-utils';
                 return plainObject;
             }
 
-          },        
-        beforeDestroy() {
-            Object.values(this._liveFeeds).map(lf => {
-                lf.cancel();
-            });
-        },
+        },        
         created() {
             if (!vue) {
                 console.warn('pouch-vue not installed!');
                 return;
             }
 
-            let defineReactive = vue.util.defineReactive,
-                vm = this;
+            let vm = this;
 
             vm._liveFeeds = {};
 
@@ -695,8 +684,9 @@ import { isRemote } from 'pouchdb-utils';
                 },
             };
 
-            defineReactive(vm, '$pouch', $pouch);
-
+            // add non reactive api
+            vm.$pouch = $pouch;
+            //add non reactive property
             vm.$databases = databases; // Add non-reactive property
 
             let pouchOptions = this.$options.pouch;
@@ -717,18 +707,15 @@ import { isRemote } from 'pouchdb-utils';
                     };
                 }
 
-                if (typeof vm.$data[key] === 'undefined') {
-                    vm.$data[key] = null;
-                }
-
-                defineReactive(vm, key, null);
                 vm.$watch(
                     pouchFn,
                     config => {
+                        // if the selector is gone, then empty the array and return
                         if (!config) {
-                            if (!vm[key]) vm[key] = [];
+                            if (!vm.$data[key]) vm.$data[key] = [];
                             return;
                         }
+
                         let selector, sort, skip, limit, first;
                         if (config.selector) {
                             selector = config.selector;
@@ -773,10 +760,10 @@ import { isRemote } from 'pouchdb-utils';
                             .on('update', (update, aggregate) => {
                                 if (first && aggregate)
                                     aggregate = aggregate[0];
-                                vm[key] = aggregateCache = aggregate;
+                                vm.$data[key] = aggregateCache = aggregate;
                             })
                             .on('ready', () => {
-                                vm[key] = aggregateCache;
+                                vm.$data[key] = aggregateCache;
                             });
                     },
                     {
@@ -785,6 +772,11 @@ import { isRemote } from 'pouchdb-utils';
                 );
             });
         },
+        beforeDestroy() {
+            Object.values(this._liveFeeds).map(lf => {
+                lf.cancel();
+            });
+        }
     };
 
     let api = {

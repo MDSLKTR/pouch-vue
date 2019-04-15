@@ -12,6 +12,7 @@
     "test:unit": "jest --no-cache"
   },
   "jest": {
+    "verbose": true,
     "setupFiles": [
       "<rootDir>/tests/global-mocks.js"
     ],
@@ -51,6 +52,7 @@
   ],
   "homepage": "https://github.com/MDSLKTR/pouch-vue",
   "dependencies": {
+    "pouchdb-authentication": "^1.1.3",
     "pouchdb-live-find": "^0.4.0",
     "pouchdb-utils": "^6.4.3"
   },
