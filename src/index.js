@@ -11,6 +11,46 @@ import { isRemote } from 'pouchdb-utils';
 
     let vuePouch = {
         // lifecycle hooks for mixin
+        beforeCreate(){
+            var pouchOptions = this.$options.pouch;
+  
+            if (!pouchOptions) {
+                return;
+            }
+
+            if(!this.$options.data)
+            {
+                this.$options.data = function () { return { }}
+            }
+
+            let oldDataFunc = this.$options.data;      
+
+            this.$options.data= function(vm) {
+                // get the Vue instance's data object from the constructor
+                var plainObject = oldDataFunc.call(vm, vm);
+
+                // map the pouch databases to an object in the Vue instance's data
+                Object.keys(pouchOptions).map(function (key) {
+
+                    var pouchFn = pouchOptions[key];
+                    if (typeof pouchFn !== 'function') {
+                        pouchFn = function () {
+                            return pouchOptions[key];
+                        };
+                    }
+
+                  if (typeof plainObject[key] === 'undefined') {
+                      plainObject[key] = null;
+                  }
+                
+                });
+
+                // return the Vue instance's data with the additional pouch objects
+                // the Vue instance's data will be made reactive before the 'created' lifecycle hook runs
+                return plainObject;
+            }
+
+          },        
         beforeDestroy() {
             Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
@@ -747,36 +787,11 @@ import { isRemote } from 'pouchdb-utils';
         },
     };
 
-    function installSelectorReplicationPlugin() {
-        // This plugin enables selector-based replication
-        pouch.plugin(pouch => {
-            let oldReplicate = pouch.replicate;
-            pouch.replicate = (source, target, repOptions) => {
-                let sourceAjax = source._ajax;
-                source._ajax = (ajaxOps, callback) => {
-                    if (ajaxOps.url.includes('_selector')) {
-                        ajaxOps.url = ajaxOps.url.replace(
-                            'filter=_selector%2F_selector',
-                            'filter=_selector'
-                        );
-                        ajaxOps.method = 'POST';
-                        ajaxOps.body = {
-                            selector: repOptions.selector,
-                        };
-                    }
-                    return sourceAjax(ajaxOps, callback);
-                };
-                return oldReplicate(source, target, repOptions);
-            };
-        });
-    }
-
     let api = {
         mixin: vuePouch,
         install: (Vue, options) => {
             vue = Vue;
             pouch = (options && options.pouch) || PouchDB;
-            installSelectorReplicationPlugin();
             defaultDB = (options && options.defaultDB) || '';
 
             // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
