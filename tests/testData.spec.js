@@ -54,8 +54,8 @@ describe('Unit Tests that todos is defined on Vue components', () => {
         }
       test(tryTestName, testFunc);
     }
-
 })
+
 describe('Unit Tests to see that the todos property on the data root level is connected with the todos property on the vue instance (this is what the beforeCreate lifecycle hook does)', () => {
   var testDatum = [
     {name: 'Test Plugin with Empty Data Function', component: emptyDataFunction},
@@ -95,9 +95,11 @@ describe('Unit Tests to see that the todos property on the data root level is co
 
       wrapper.vm.todos = ['north', 'east', 'south', 'west'];
 
-      expect(wrapper.vm.$data.todos).toHaveLength(4);
+      expect(wrapper.vm.$data.todos).toBe(wrapper.vm.todos);
+
       }
     test(tryTestName, testFunc);
   }
 
 })
+
