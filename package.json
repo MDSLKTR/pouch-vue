@@ -52,7 +52,6 @@
   ],
   "homepage": "https://github.com/MDSLKTR/pouch-vue",
   "dependencies": {
-    "pouchdb-authentication": "^1.1.3",
     "pouchdb-live-find": "^0.4.0",
     "pouchdb-utils": "^6.4.3"
   },
@@ -68,6 +67,7 @@
     "jest": "^24.7.1",
     "node-fetch": "^2.3.0",
     "pouchdb-find": "^7.0.0",
+    "pouchdb-authentication": "^1.1.3",
     "pouchdb-node": "^7.0.0",
     "rollup": "^1.7.4",
     "rollup-plugin-babel": "^4.3.2",
