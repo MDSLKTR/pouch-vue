@@ -72,12 +72,11 @@ ___
 **For example:**
 ```
     $pouch.sync('complaints', 'https:/42.233.1.44/complaints', {
-      filter:'_selector',
-      selector: {
-        type: 'complaint',
-        assignee: this.session.name
-      }
-    });
+        selector: {
+            type: 'complaint',
+            assignee: this.session.name
+        }
+      });
 
 ```
 * `$pouch.push(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.

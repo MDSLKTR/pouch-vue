@@ -11,6 +11,7 @@ import emptyDataFunction from './emptyDataFunction.vue'
 import emptyDataObject from './emptyDataObject.vue'
 import noData from './noDataFunctionOrObject.vue'
 import existingData from './ExistingTodosDataFunction.vue'
+import todosDataWithSelector from './TodosDataFunctionWithSelector.vue'
 
 describe('Pouch options are returned by function', () => {
   describe('Unit Tests that todos is defined on Vue components', () => {
@@ -136,7 +137,7 @@ describe('Pouch options are objects', () => {
         const wrapper = mount(tryTestData, {
           localVue,
           pouch: {
-              todos: {/*empty selector*/ }
+            todos: {/*empty selector*/ }
           }
         })
 
@@ -178,8 +179,8 @@ describe('Pouch options are objects', () => {
           localVue,
           pouch: {
             todos: {/*empty selector*/ }
-        }
-      })
+          }
+        })
 
         wrapper.vm.todos = ['north', 'east', 'south', 'west'];
 
@@ -191,4 +192,48 @@ describe('Pouch options are objects', () => {
 
   })
 })
+describe('Set selector to null', () => {
+    var testDatum = [
+      { name: 'Test Plugin with Reactive Selector that can return null', component: todosDataWithSelector },
+    ];
 
+    for (var i = 0; i < testDatum.length; i++) {
+
+
+      let tryTestData = testDatum[i].component;
+      let tryTestName = testDatum[i].name;
+
+      // selector will return null if the age is less than the max age
+      // purely to get a reactive selector that will return null occasionally and
+      // trip up the watcher on the pouch database config options
+      let selector = function () { return (this.age < this.maxAge) ? null : {} }
+
+      function testFunc() {
+        const localVue = createLocalVue()
+
+        // add requisite PouchDB plugins
+        PouchDB.plugin(lf);
+        PouchDB.plugin(plf);
+
+        // add Vue.js plugin
+        localVue.use(PouchVue, {
+          pouch: PouchDB,
+          defaultDB: 'farfromhere',
+        });
+
+
+        const wrapper = mount(tryTestData, {
+          localVue,
+          pouch: {
+            todos: selector
+          }
+        })
+
+        wrapper.vm.todos = ['north', 'east', 'south', 'west'];
+
+        wrapper.vm.maxAge = 50;
+        expect(wrapper.emitted('pouchdb-livefeed-selector-error')).toHaveLength(1);
+      }
+      test(tryTestName, testFunc);
+    }
+})
