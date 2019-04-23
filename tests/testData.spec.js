@@ -232,7 +232,7 @@ describe('Set selector to null', () => {
         wrapper.vm.todos = ['north', 'east', 'south', 'west'];
 
         wrapper.vm.maxAge = 50;
-        expect(wrapper.emitted('pouchdb-livefeed-selector-error')).toHaveLength(1);
+        expect(wrapper.emitted('pouchdb-livefeed-error')).toHaveLength(1);
       }
       test(tryTestName, testFunc);
     }
