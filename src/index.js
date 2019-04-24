@@ -730,13 +730,7 @@ import { isRemote } from 'pouchdb-utils';
 
                             return;
                         }
-                        else {
-                            vm.$emit('pouchdb-livefeed-created', {
-                                db: key,
-                                config: config,
-                            });
 
-                        }
 
                         let selector, sort, skip, limit, first;
 
@@ -769,6 +763,11 @@ import { isRemote } from 'pouchdb-utils';
                             db = databases[databaseParam];
                         }
                         if (!db) {
+                            vm.$emit('pouchdb-livefeed-error', {
+                                db: key,
+                                config: config,
+                                error: 'Null or undefined database'
+                            });                            
                             return;
                         }
                         if (vm._liveFeeds[key]) {
@@ -804,7 +803,29 @@ import { isRemote } from 'pouchdb-utils';
                                     db: key,
                                     name: db.name
                                 });
-                            });
+                            })
+                            .on('cancelled', function() {
+                                vm.$emit('pouchdb-livefeed-cancel', {
+                                    db: key,
+                                    name: db.name,                                                                        
+                                    name: db.name
+                                });
+                              })
+                              .on('error', function(err) {
+                                vm.$emit('pouchdb-livefeed-error', {
+                                    db: key,
+                                    name: db.name,                                    
+                                    errorobject: err,
+                                    error: 'Null or undefined selector'
+                                });
+                              })
+                              .then( () => {
+                                vm.$emit('pouchdb-livefeed-created', {
+                                db: key,
+                                name: db.name,                                                                    
+                                config: config,
+                                })
+                            });                            
                     },
                     {
                         immediate: true,
