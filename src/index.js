@@ -11,6 +11,9 @@ import { isRemote } from 'pouchdb-utils';
 
     let vuePouch = {
         // lifecycle hooks for mixin
+
+        // make sure the pouch databases are defined on the data object
+        // before its walked and made reactive
         beforeCreate(){
             var pouchOptions = this.$options.pouch;
   
@@ -29,6 +32,7 @@ import { isRemote } from 'pouchdb-utils';
 
             let oldDataFunc = this.$options.data;      
 
+            // the data function is explicitly passed a vm object in 
             this.$options.data= function(vm) {
                 // get the Vue instance's data object from the constructor
                 var plainObject = oldDataFunc.call(vm, vm);
@@ -45,7 +49,9 @@ import { isRemote } from 'pouchdb-utils';
                 return plainObject;
             }
 
-        },        
+        },
+        // now that the data object has been observed and made reactive
+        // the api can be set up        
         created() {
             if (!vue) {
                 console.warn('pouch-vue not installed!');
@@ -707,31 +713,46 @@ import { isRemote } from 'pouchdb-utils';
                     };
                 }
 
+                // if the selector changes, modify the liveFeed object
+                //
                 vm.$watch(
                     pouchFn,
                     config => {
-                        // if the selector is gone, then empty the array and return
+                        // if the selector is now giving a value of null or undefined, then return
+                        // the previous liveFeed object will remain
                         if (!config) {
-                            if (!vm.$data[key]) vm.$data[key] = [];
+                            vm.$emit('pouchdb-livefeed-error', {
+                                db: key,
+                                config: config,
+                                error: 'Null or undefined selector'
+                            });
+
                             return;
                         }
 
+
                         let selector, sort, skip, limit, first;
+
                         if (config.selector) {
                             selector = config.selector;
                             sort = config.sort;
                             skip = config.skip;
                             limit = config.limit;
                             first = config.first;
-                        } else {
+                        }
+                        else {
                             selector = config;
                         }
 
+                        // the database could change in the config options
+                        // so the key could point to a database of a different name
                         let databaseParam = config.database || key;
                         let db = null;
+
                         if (typeof databaseParam === 'object') {
                             db = databaseParam;
-                        } else if (typeof databaseParam === 'string') {
+                        }
+                        else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
                                 databases[databaseParam] = new pouch(
                                     databaseParam
@@ -741,6 +762,10 @@ import { isRemote } from 'pouchdb-utils';
                             db = databases[databaseParam];
                         }
                         if (!db) {
+                            vm.$emit('pouchdb-livefeed-error', {
+                                db: key,
+                                error: 'Null or undefined database'
+                            });
                             return;
                         }
                         if (vm._liveFeeds[key]) {
@@ -760,10 +785,41 @@ import { isRemote } from 'pouchdb-utils';
                             .on('update', (update, aggregate) => {
                                 if (first && aggregate)
                                     aggregate = aggregate[0];
+
                                 vm.$data[key] = aggregateCache = aggregate;
+
+                                vm.$emit('pouchdb-livefeed-update', {
+                                    db: key,
+                                    name: db.name
+                                });
+
                             })
                             .on('ready', () => {
                                 vm.$data[key] = aggregateCache;
+
+                                vm.$emit('pouchdb-livefeed-ready', {
+                                    db: key,
+                                    name: db.name
+                                });
+                            })
+                            .on('cancelled', function () {
+                                vm.$emit('pouchdb-livefeed-cancel', {
+                                    db: key,
+                                    name: db.name
+                                });
+                            })
+                            .on('error', function (err) {
+                                vm.$emit('pouchdb-livefeed-error', {
+                                    db: key,
+                                    name: db.name,
+                                    error: err,
+                                });
+                            })
+                            .then(() => {
+                                vm.$emit('pouchdb-livefeed-created', {
+                                    db: key,
+                                    name: db.name,
+                                })
                             });
                     },
                     {
@@ -772,6 +828,7 @@ import { isRemote } from 'pouchdb-utils';
                 );
             });
         },
+        // tear down the liveFeed objects
         beforeDestroy() {
             Object.values(this._liveFeeds).map(lf => {
                 lf.cancel();
