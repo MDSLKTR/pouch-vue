@@ -33,10 +33,9 @@ import { isRemote } from 'pouchdb-utils';
             let oldDataFunc = this.$options.data;      
 
             // the data function is explicitly passed a vm object in 
-            // we're calling it veem here to differentiate with vm which is used often in this plugin
-            this.$options.data= function(veem) {
+            this.$options.data= function(vm) {
                 // get the Vue instance's data object from the constructor
-                var plainObject = oldDataFunc.call(veem, veem);
+                var plainObject = oldDataFunc.call(vm, vm);
 
                 // map the pouch databases to an object in the Vue instance's data
                 Object.keys(pouchOptions).map(function (key) {
@@ -765,9 +764,8 @@ import { isRemote } from 'pouchdb-utils';
                         if (!db) {
                             vm.$emit('pouchdb-livefeed-error', {
                                 db: key,
-                                config: config,
                                 error: 'Null or undefined database'
-                            });                            
+                            });
                             return;
                         }
                         if (vm._liveFeeds[key]) {
@@ -794,7 +792,7 @@ import { isRemote } from 'pouchdb-utils';
                                     db: key,
                                     name: db.name
                                 });
-    
+
                             })
                             .on('ready', () => {
                                 vm.$data[key] = aggregateCache;
@@ -804,28 +802,25 @@ import { isRemote } from 'pouchdb-utils';
                                     name: db.name
                                 });
                             })
-                            .on('cancelled', function() {
+                            .on('cancelled', function () {
                                 vm.$emit('pouchdb-livefeed-cancel', {
                                     db: key,
-                                    name: db.name,                                                                        
                                     name: db.name
                                 });
-                              })
-                              .on('error', function(err) {
+                            })
+                            .on('error', function (err) {
                                 vm.$emit('pouchdb-livefeed-error', {
                                     db: key,
-                                    name: db.name,                                    
-                                    errorobject: err,
-                                    error: 'Null or undefined selector'
+                                    name: db.name,
+                                    error: err,
                                 });
-                              })
-                              .then( () => {
+                            })
+                            .then(() => {
                                 vm.$emit('pouchdb-livefeed-created', {
-                                db: key,
-                                name: db.name,                                                                    
-                                config: config,
+                                    db: key,
+                                    name: db.name,
                                 })
-                            });                            
+                            });
                     },
                     {
                         immediate: true,
