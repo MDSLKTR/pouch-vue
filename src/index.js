@@ -27,8 +27,7 @@ import { isRemote } from 'pouchdb-utils';
 
             if (!this.$options.data) {
                 this.$options.data = function() {
-                    return { }
-                    ;
+                    return {};
                 };
             }
 
