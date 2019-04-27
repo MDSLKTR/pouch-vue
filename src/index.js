@@ -14,9 +14,9 @@ import { isRemote } from 'pouchdb-utils';
 
         // make sure the pouch databases are defined on the data object
         // before its walked and made reactive
-        beforeCreate(){
+        beforeCreate() {
             var pouchOptions = this.$options.pouch;
-  
+
             if (!pouchOptions) {
                 return;
             }
@@ -25,33 +25,34 @@ import { isRemote } from 'pouchdb-utils';
                 pouchOptions = pouchOptions();
             }
 
-            if(!this.$options.data)
-            {
-                this.$options.data = function () { return { }}
+            if (!this.$options.data) {
+                this.$options.data = function() {
+                    return {};
+                };
             }
 
-            let oldDataFunc = this.$options.data;      
+            let oldDataFunc = this.$options.data;
 
-            // the data function is explicitly passed a vm object in 
+            // the data function is explicitly passed a vm object in
             this.$options.data= function(vm) {
                 // get the Vue instance's data object from the constructor
                 var plainObject = oldDataFunc.call(vm, vm);
 
                 // map the pouch databases to an object in the Vue instance's data
-                Object.keys(pouchOptions).map(function (key) {
-                  if (typeof plainObject[key] === 'undefined') {
-                      plainObject[key] = null;
-                  }
+                Object.keys(pouchOptions).map(function(key) {
+                    if (typeof plainObject[key] === 'undefined') {
+                        plainObject[key] = null;
+                    }
                 });
 
                 // return the Vue instance's data with the additional pouch objects
                 // the Vue instance's data will be made reactive before the 'created' lifecycle hook runs
                 return plainObject;
-            }
+            };
 
         },
         // now that the data object has been observed and made reactive
-        // the api can be set up        
+        // the api can be set up
         created() {
             if (!vue) {
                 console.warn('pouch-vue not installed!');
@@ -177,10 +178,10 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                putUser (username, metadata = {}, db = databases[ defaultDB ]) {
+                putUser(username, metadata = {}, db = databases[ defaultDB ]) {
                     return db
                         .putUser(username, {
-                            metadata
+                            metadata,
                         })
                         .catch(error => {
                             return new Promise(resolve => {
@@ -188,7 +189,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                deleteUser (username, db = databases[ defaultDB ]) {
+                deleteUser(username, db = databases[ defaultDB ]) {
                     return db
                         .deleteUser(username)
                         .catch(error => {
@@ -197,7 +198,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                changePassword (username, password, db = databases[ defaultDB ]) {
+                changePassword(username, password, db = databases[ defaultDB ]) {
                     return db
                         .changePassword(username, password)
                         .catch(error => {
@@ -206,7 +207,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                changeUsername (oldUsername, newUsername, db = databases[ defaultDB ]) {
+                changeUsername(oldUsername, newUsername, db = databases[ defaultDB ]) {
                     return db
                         .changeUsername(oldUsername, newUsername)
                         .catch(error => {
@@ -215,7 +216,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                signUpAdmin (adminUsername, adminPassword, db = databases[ defaultDB ]) {
+                signUpAdmin(adminUsername, adminPassword, db = databases[ defaultDB ]) {
                     return db
                         .signUpAdmin(adminUsername, adminPassword)
                         .catch(error => {
@@ -224,7 +225,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                 },
-                deleteAdmin (adminUsername, db = databases[ defaultDB ]) {
+                deleteAdmin(adminUsername, db = databases[ defaultDB ]) {
                     return db
                         .deleteAdmin(adminUsername)
                         .catch(error => {
@@ -724,7 +725,7 @@ import { isRemote } from 'pouchdb-utils';
                             vm.$emit('pouchdb-livefeed-error', {
                                 db: key,
                                 config: config,
-                                error: 'Null or undefined selector'
+                                error: 'Null or undefined selector',
                             });
 
                             return;
@@ -739,8 +740,7 @@ import { isRemote } from 'pouchdb-utils';
                             skip = config.skip;
                             limit = config.limit;
                             first = config.first;
-                        }
-                        else {
+                        } else {
                             selector = config;
                         }
 
@@ -751,8 +751,7 @@ import { isRemote } from 'pouchdb-utils';
 
                         if (typeof databaseParam === 'object') {
                             db = databaseParam;
-                        }
-                        else if (typeof databaseParam === 'string') {
+                        } else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
                                 databases[databaseParam] = new pouch(
                                     databaseParam
@@ -764,7 +763,7 @@ import { isRemote } from 'pouchdb-utils';
                         if (!db) {
                             vm.$emit('pouchdb-livefeed-error', {
                                 db: key,
-                                error: 'Null or undefined database'
+                                error: 'Null or undefined database',
                             });
                             return;
                         }
@@ -790,7 +789,7 @@ import { isRemote } from 'pouchdb-utils';
 
                                 vm.$emit('pouchdb-livefeed-update', {
                                     db: key,
-                                    name: db.name
+                                    name: db.name,
                                 });
 
                             })
@@ -799,27 +798,21 @@ import { isRemote } from 'pouchdb-utils';
 
                                 vm.$emit('pouchdb-livefeed-ready', {
                                     db: key,
-                                    name: db.name
+                                    name: db.name,
                                 });
                             })
-                            .on('cancelled', function () {
+                            .on('cancelled', function() {
                                 vm.$emit('pouchdb-livefeed-cancel', {
                                     db: key,
-                                    name: db.name
+                                    name: db.name,
                                 });
                             })
-                            .on('error', function (err) {
+                            .on('error', function(err) {
                                 vm.$emit('pouchdb-livefeed-error', {
                                     db: key,
                                     name: db.name,
                                     error: err,
                                 });
-                            })
-                            .then(() => {
-                                vm.$emit('pouchdb-livefeed-created', {
-                                    db: key,
-                                    name: db.name,
-                                })
                             });
                     },
                     {
@@ -830,10 +823,10 @@ import { isRemote } from 'pouchdb-utils';
         },
         // tear down the liveFeed objects
         beforeDestroy() {
-            Object.values(this._liveFeeds).map(lf => {
-                lf.cancel();
+            Object.keys(this._liveFeeds).map(lfKey => {
+                this._liveFeeds[lfKey].cancel();
             });
-        }
+        },
     };
 
     let api = {
@@ -858,7 +851,7 @@ import { isRemote } from 'pouchdb-utils';
             // mixin https://github.com/vuejs/vue/blob/dev/src/core/global-api/mixin.js
             Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
         },
-    };    
-    
+    };
+
     module.exports = api;
 })();
