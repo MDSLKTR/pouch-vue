@@ -813,12 +813,6 @@ import { isRemote } from 'pouchdb-utils';
                                     name: db.name,
                                     error: err,
                                 });
-                            })
-                            .then(() => {
-                                vm.$emit('pouchdb-livefeed-created', {
-                                    db: key,
-                                    name: db.name,
-                                });
                             });
                     },
                     {
