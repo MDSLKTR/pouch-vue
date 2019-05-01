@@ -2,13 +2,9 @@
 /// <reference types="pouchdb-authentication" />
 /// <reference types="vue" />
 
-import _Vue, {ComponentOptions, VueConstructor, PluginFunction, PluginObject } from 'vue';
+import _Vue, {VueConstructor, PluginObject } from 'vue';
 
 import { isRemote } from 'pouchdb-utils';
-// import {PublicPouchVueMethods} from "pouch-vue"
-//import 'pouchdb-authentication';
-// import {EventEmitter} from 'events';
-
 
 type PouchDatabases = Record<string, PouchDB.Database>;
 
@@ -57,8 +53,8 @@ interface PouchAPI {
   }
 
 
-
-// https://herringtondarkholme.github.io/2017/10/12/vue-ts3/
+// well explained in vue documentation: https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
+// further explanation: https://herringtondarkholme.github.io/2017/10/12/vue-ts3/
 declare module 'vue/types/vue' {
     interface VueConstructor {
         util: {
@@ -66,7 +62,7 @@ declare module 'vue/types/vue' {
             (
                 parent: Object,
                 child: Object,
-                vm?: any //Component
+                vm?: any
             ): Object;
         }
         // the constructor has an options object but the vue instance uses $options
@@ -82,6 +78,13 @@ declare module 'vue/types/vue' {
       }
 }
 
+// declare augmentation for the component options
+declare module 'vue/types/options' {
+    interface ComponentOptions<V extends _Vue> {
+        // this specifies the reactive pouch database that will be created in the data object
+        pouch?: any
+    }
+}
 
 
 let vue: VueConstructor,
