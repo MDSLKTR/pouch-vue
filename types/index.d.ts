@@ -5,9 +5,7 @@
 /// <reference types="pouchdb-mapreduce" />
 /// <reference types="pouchdb-replication" />
 /// <reference types="node" />
-
-// default TypeScript declaration file (should be replaced by rollup)
-import { PluginObject } from 'vue';
+import _Vue, { PluginObject } from 'vue';
 declare type PouchDatabases = Record<string, PouchDB.Database>;
 interface PouchVueOptions {
     pouch: PouchDB.Static;
@@ -66,6 +64,11 @@ declare module 'vue/types/vue' {
         $databases: PouchDatabases;
         _liveFeeds: Record<string, PouchDB.LiveFind.LiveFeed>;
         options: any;
+    }
+}
+declare module 'vue/types/options' {
+    interface ComponentOptions<V extends _Vue> {
+        pouch?: any;
     }
 }
 declare let api: PluginObject<PouchVueOptions>;
