@@ -1,5 +1,5 @@
 import PouchDB from 'pouchdb-node';
-import PouchVue from '../src/index'
+import PouchVue from '../lib/index'
 import lf from 'pouchdb-find';
 import plf from 'pouchdb-live-find';
 
