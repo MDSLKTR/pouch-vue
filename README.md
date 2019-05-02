@@ -199,7 +199,6 @@ main.ts
 import { Component, Vue } from 'vue-property-decorator';
 import PouchDB from 'pouchdb-browser';
 import lf from 'pouchdb-find';
-// @ts-ignore
 import plf from 'pouchdb-live-find';
 import auth from 'pouchdb-authentication';
 
