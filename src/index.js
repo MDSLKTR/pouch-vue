@@ -837,22 +837,15 @@ import { isRemote } from 'pouchdb-utils';
     };
 
     let api = {
-        install: (Vue, options) => {
+        install: (Vue, options = {}) => {
             vue = Vue;
-            pouch = (options && options.pouch) || PouchDB;
-            defaultDB = (options && options.defaultDB) || '';
+
+            ({ pouch = PouchDB, defaultDB = '', optionsDB = {} } = options);
 
             // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
             // var pouchdbDebug = require('pouchdb-debug');
             // PouchDB.plugin(pouchdbDebug);
-            if (options && options.debug && options.debug === '*') {
-                pouch.debug.enable(options.debug);
-            }
-
-            // include options for creating databases: https://pouchdb.com/api.html#create_database
-            if (options && options.optionsDB) {
-                optionsDB = options && options.optionsDB;
-            }
+            if (options.debug === '*') pouch.debug.enable('*');
 
             Vue.mixin(vuePouch);
         },
