@@ -837,7 +837,6 @@ import { isRemote } from 'pouchdb-utils';
     };
 
     let api = {
-        mixin: vuePouch,
         install: (Vue, options) => {
             vue = Vue;
             pouch = (options && options.pouch) || PouchDB;
@@ -855,8 +854,7 @@ import { isRemote } from 'pouchdb-utils';
                 optionsDB = options && options.optionsDB;
             }
 
-            // mixin https://github.com/vuejs/vue/blob/dev/src/core/global-api/mixin.js
-            Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
+            Vue.mixin(vuePouch);
         },
     };
 
