@@ -590,35 +590,35 @@ import { isRemote } from 'pouchdb-utils';
                     return changes;
                 },
 
-                get(db=defaultDB, object, options = {}) {
+                get(object, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].get(object, options);
                 },
 
-                put(db=defaultDB, object, options = {}) {
+                put(object, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].put(object, options);
                 },
 
-                post(db=defaultDB, object, options = {}) {
+                post(object, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].post(object, options);
                 },
 
-                remove(db=defaultDB, object, options = {}) {
+                remove(object, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].remove(object, options);
                 },
 
-                query(db=defaultDB, fun, options = {}) {
+                query(fun, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -655,7 +655,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].allDocs(_options);
                 },
 
-                bulkDocs(db=defaultDB, docs, options = {}) {
+                bulkDocs(docs, db=defaultDB, options = {}) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -687,7 +687,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].info();
                 },
 
-                putAttachment(db=defaultDB, docId, rev, attachment) {
+                putAttachment(docId, rev, attachment, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -701,7 +701,7 @@ import { isRemote } from 'pouchdb-utils';
                     );
                 },
 
-                getAttachment(db=defaultDB, docId, attachmentId) {
+                getAttachment(docId, attachmentId, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -709,7 +709,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].getAttachment(docId, attachmentId);
                 },
 
-                deleteAttachment(db=defaultDB, docId, attachmentId, docRev) {
+                deleteAttachment(docId, attachmentId, docRev, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
