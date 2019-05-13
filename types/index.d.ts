@@ -32,25 +32,25 @@ interface PouchAPI {
     push(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Replication<{}>;
     pull(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Replication<{}>;
     changes(db?: string, options?: {}): PouchDB.Core.Changes<{}>;
-    get(db?: string, object: any, options?: PouchDB.Core.GetOptions): Promise<any>;
-    put(db?: string, object: any, options?: PouchDB.Core.PutOptions): Promise<PouchDB.Core.Response>;
-    post(db?: string, object: any, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
-    remove(db?: string, object: any, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
-    query(db?: string, fun: any, options?: PouchDB.Query.Options<{}, {}>): Promise<PouchDB.Query.Response<{}>>;
+    get(object: any, db?: string, options?: PouchDB.Core.GetOptions): Promise<any>;
+    put(object: any, db?: string, options?: PouchDB.Core.PutOptions): Promise<PouchDB.Core.Response>;
+    post(object: any, db?: string, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
+    remove(object: any, db?: string, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
+    query(fun: any, db?: string, options?: PouchDB.Query.Options<{}, {}>): Promise<PouchDB.Query.Response<{}>>;
     find(db?: string, options?: PouchDB.Find.FindRequest<{}>): Promise<PouchDB.Find.FindResponse<{}>>;
     createIndex(db?: string, index?: PouchDB.Find.CreateIndexOptions): Promise<PouchDB.Find.CreateIndexResponse<{}>>;
     allDocs(db?: string, options?: PouchDB.Core.AllDocsWithKeyOptions | PouchDB.Core.AllDocsWithKeysOptions | PouchDB.Core.AllDocsWithinRangeOptions | PouchDB.Core.AllDocsOptions): Promise<PouchDB.Core.AllDocsResponse<{}>>;
-    bulkDocs(db?: string, docs: PouchDB.Core.PutDocument<{}>[], options?: PouchDB.Core.BulkDocsOptions): Promise<(PouchDB.Core.Response | PouchDB.Core.Error)[]>;
+    bulkDocs(docs: PouchDB.Core.PutDocument<{}>[], db?: string, options?: PouchDB.Core.BulkDocsOptions): Promise<(PouchDB.Core.Response | PouchDB.Core.Error)[]>;
     compact(db?: string, options?: PouchDB.Core.CompactOptions): Promise<PouchDB.Core.Response>;
     viewCleanup(db?: string): Promise<PouchDB.Core.BasicResponse>;
     info(db?: string): Promise<PouchDB.Core.DatabaseInfo>;
-    putAttachment(db?: string, docId: PouchDB.Core.DocumentId, rev: string, attachment: {
+    putAttachment(docId: PouchDB.Core.DocumentId, rev: string, attachment: {
         id: string;
         data: PouchDB.Core.AttachmentData;
         type: string;
-    }): Promise<PouchDB.Core.Response>;
-    getAttachment(db?: string, docId: PouchDB.Core.DocumentId, attachmentId: PouchDB.Core.AttachmentId): Promise<Blob | Buffer>;
-    deleteAttachment(db?: string, docId: PouchDB.Core.DocumentId, attachmentId: PouchDB.Core.AttachmentId, docRev: PouchDB.Core.RevisionId): Promise<PouchDB.Core.RemoveAttachmentResponse>;
+    }, db?: string): Promise<PouchDB.Core.Response>;
+    getAttachment(docId: PouchDB.Core.DocumentId, attachmentId: PouchDB.Core.AttachmentId, db?: string): Promise<Blob | Buffer>;
+    deleteAttachment(docId: PouchDB.Core.DocumentId, attachmentId: PouchDB.Core.AttachmentId, docRev: PouchDB.Core.RevisionId, db?: string): Promise<PouchDB.Core.RemoveAttachmentResponse>;
 }
 declare module 'vue/types/vue' {
     interface VueConstructor {
