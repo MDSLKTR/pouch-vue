@@ -54,7 +54,7 @@ ___
 * `$pouch.destroy(OPTIONAL db)`: same as https://pouchdb.com/api.html#delete_database
 * `$pouch.defaults(options)`: same as https://pouchdb.com/api.html#defaults
 ___
-* `$pouch.sync(localDatabase, remoteDatabase, OPTIONAL options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
+* `$pouch.sync(localDatabase, OPTIONAL remoteDatabase, OPTIONAL options)`: The optional remoteDatabase parameter will use the default db set in the pouch options initially. Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
 
 **default options (will be merged with the options passed in)**:
  ```
@@ -79,8 +79,8 @@ ___
       });
 
 ```
-* `$pouch.push(localDatabase, remoteDatabase, OPTIONAL options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
-* `$pouch.pull(localDatabase, remoteDatabase, OPTIONAL options)`: Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
+* `$pouch.push(localDatabase, OPTIONAL remoteDatabase, OPTIONAL options)`: The optional remoteDatabase parameter will use the default db set in the pouch options initially. Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
+* `$pouch.pull(localDatabase, OPTIONAL remoteDatabase, OPTIONAL options)`: The optional remoteDatabase parameter will use the default db set in the pouch options initially. Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
 * `$pouch.changes(OPTIONAL options, OPTIONAL db)`: Listens for change on a db like: https://pouchdb.com/api.html#changes
 * `$pouch.put(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
 * `$pouch.post(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
