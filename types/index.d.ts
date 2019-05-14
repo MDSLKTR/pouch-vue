@@ -31,17 +31,17 @@ interface PouchAPI {
     sync(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Sync<{}>;
     push(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Replication<{}>;
     pull(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Replication<{}>;
-    changes(db?: string, options?: {}): PouchDB.Core.Changes<{}>;
-    get(object: any, db?: string, options?: PouchDB.Core.GetOptions): Promise<any>;
-    put(object: any, db?: string, options?: PouchDB.Core.PutOptions): Promise<PouchDB.Core.Response>;
-    post(object: any, db?: string, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
-    remove(object: any, db?: string, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response>;
-    query(fun: any, db?: string, options?: PouchDB.Query.Options<{}, {}>): Promise<PouchDB.Query.Response<{}>>;
-    find(db?: string, options?: PouchDB.Find.FindRequest<{}>): Promise<PouchDB.Find.FindResponse<{}>>;
-    createIndex(db?: string, index?: PouchDB.Find.CreateIndexOptions): Promise<PouchDB.Find.CreateIndexResponse<{}>>;
-    allDocs(db?: string, options?: PouchDB.Core.AllDocsWithKeyOptions | PouchDB.Core.AllDocsWithKeysOptions | PouchDB.Core.AllDocsWithinRangeOptions | PouchDB.Core.AllDocsOptions): Promise<PouchDB.Core.AllDocsResponse<{}>>;
-    bulkDocs(docs: PouchDB.Core.PutDocument<{}>[], db?: string, options?: PouchDB.Core.BulkDocsOptions): Promise<(PouchDB.Core.Response | PouchDB.Core.Error)[]>;
-    compact(db?: string, options?: PouchDB.Core.CompactOptions): Promise<PouchDB.Core.Response>;
+    changes(options?: {}, db?: string): PouchDB.Core.Changes<{}>;
+    get(object: any, options?: PouchDB.Core.GetOptions, db?: string): Promise<any>;
+    put(object: any, options?: PouchDB.Core.PutOptions, db?: string): Promise<PouchDB.Core.Response>;
+    post(object: any, options?: PouchDB.Core.Options, db?: string): Promise<PouchDB.Core.Response>;
+    remove(object: any, options?: PouchDB.Core.Options, db?: string): Promise<PouchDB.Core.Response>;
+    query(fun: any, options?: PouchDB.Query.Options<{}, {}>, db?: string): Promise<PouchDB.Query.Response<{}>>;
+    find(options?: PouchDB.Find.FindRequest<{}>, db?: string): Promise<PouchDB.Find.FindResponse<{}>>;
+    createIndex(index?: PouchDB.Find.CreateIndexOptions, db?: string): Promise<PouchDB.Find.CreateIndexResponse<{}>>;
+    allDocs(options?: PouchDB.Core.AllDocsWithKeyOptions | PouchDB.Core.AllDocsWithKeysOptions | PouchDB.Core.AllDocsWithinRangeOptions | PouchDB.Core.AllDocsOptions, db?: string): Promise<PouchDB.Core.AllDocsResponse<{}>>;
+    bulkDocs(docs: PouchDB.Core.PutDocument<{}>[], options?: PouchDB.Core.BulkDocsOptions, db?: string): Promise<(PouchDB.Core.Response | PouchDB.Core.Error)[]>;
+    compact(options?: PouchDB.Core.CompactOptions, db?: string): Promise<PouchDB.Core.Response>;
     viewCleanup(db?: string): Promise<PouchDB.Core.BasicResponse>;
     info(db?: string): Promise<PouchDB.Core.DatabaseInfo>;
     putAttachment(docId: PouchDB.Core.DocumentId, rev: string, attachment: {
