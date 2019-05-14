@@ -543,7 +543,7 @@ import { isRemote } from 'pouchdb-utils';
                     return rep;
                 },
 
-                changes(db=defaultDB, options = {}) {
+                changes(options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -590,42 +590,42 @@ import { isRemote } from 'pouchdb-utils';
                     return changes;
                 },
 
-                get(object, db=defaultDB, options = {}) {
+                get(object, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].get(object, options);
                 },
 
-                put(object, db=defaultDB, options = {}) {
+                put(object, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].put(object, options);
                 },
 
-                post(object, db=defaultDB, options = {}) {
+                post(object, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].post(object, options);
                 },
 
-                remove(object, db=defaultDB, options = {}) {
+                remove(object, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].remove(object, options);
                 },
 
-                query(fun, db=defaultDB, options = {}) {
+                query(fun, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].query(fun, options);
                 },
 
-                find(db=defaultDB, options = {}) {
+                find(options, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -633,7 +633,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].find(options);
                 },
 
-                createIndex(db=defaultDB, index = {}) {
+                createIndex(index, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -641,7 +641,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].createIndex(index);
                 },
 
-                allDocs(db=defaultDB, options = {}) {
+                allDocs(options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -655,7 +655,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].allDocs(_options);
                 },
 
-                bulkDocs(docs, db=defaultDB, options = {}) {
+                bulkDocs(docs, options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -663,7 +663,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].bulkDocs(docs, options);
                 },
 
-                compact(db=defaultDB, options = {}) {
+                compact(options = {}, db=defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
