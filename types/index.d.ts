@@ -25,7 +25,7 @@ interface PouchAPI {
     deleteAdmin(adminUsername: string, db?: string): Promise<string | {}>;
     disconnect(db?: string): void;
     destroy(db?: string): void;
-    defaults(options?: PouchDB.Configuration.DatabaseConfiguration): void;
+    defaults(options: PouchDB.Configuration.DatabaseConfiguration): void;
     close(db?: string): Promise<void>;
     getSession(db?: string): Promise<{}>;
     sync(localDB: string, remoteDB?: string, options?: {}): PouchDB.Replication.Sync<{}>;
@@ -37,8 +37,8 @@ interface PouchAPI {
     post(object: any, options?: PouchDB.Core.Options, db?: string): Promise<PouchDB.Core.Response>;
     remove(object: any, options?: PouchDB.Core.Options, db?: string): Promise<PouchDB.Core.Response>;
     query(fun: any, options?: PouchDB.Query.Options<{}, {}>, db?: string): Promise<PouchDB.Query.Response<{}>>;
-    find(options?: PouchDB.Find.FindRequest<{}>, db?: string): Promise<PouchDB.Find.FindResponse<{}>>;
-    createIndex(index?: PouchDB.Find.CreateIndexOptions, db?: string): Promise<PouchDB.Find.CreateIndexResponse<{}>>;
+    find(options: PouchDB.Find.FindRequest<{}>, db?: string): Promise<PouchDB.Find.FindResponse<{}>>;
+    createIndex(index: PouchDB.Find.CreateIndexOptions, db?: string): Promise<PouchDB.Find.CreateIndexResponse<{}>>;
     allDocs(options?: PouchDB.Core.AllDocsWithKeyOptions | PouchDB.Core.AllDocsWithKeysOptions | PouchDB.Core.AllDocsWithinRangeOptions | PouchDB.Core.AllDocsOptions, db?: string): Promise<PouchDB.Core.AllDocsResponse<{}>>;
     bulkDocs(docs: PouchDB.Core.PutDocument<{}>[], options?: PouchDB.Core.BulkDocsOptions, db?: string): Promise<(PouchDB.Core.Response | PouchDB.Core.Error)[]>;
     compact(options?: PouchDB.Core.CompactOptions, db?: string): Promise<PouchDB.Core.Response>;
