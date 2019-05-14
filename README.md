@@ -51,10 +51,10 @@ All Methods return a promise and mirror or extend the API from pouchdb.
 * `$pouch.signUpAdmin(adminUsername, adminPassword, OPTIONAL db)`: Sign up a new admin and returns response. [pouchdb-authentication API : signUpAdmin](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbsignupadminusername-password--options--callback)
 * `$pouch.deleteAdmin(name, OPTIONAL db)`:Delete an admin and returns response. [pouchdb-authentication API : deleteAdmin](https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/api.md#dbdeleteadminusername-opts--callback)
 ___
-* `$pouch.destroy(db)`: same as https://pouchdb.com/api.html#delete_database
+* `$pouch.destroy(OPTIONAL db)`: same as https://pouchdb.com/api.html#delete_database
 * `$pouch.defaults(options)`: same as https://pouchdb.com/api.html#defaults
 ___
-* `$pouch.sync(localDatabase, remoteDatabase, options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
+* `$pouch.sync(localDatabase, remoteDatabase, OPTIONAL options)`: Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
 
 **default options (will be merged with the options passed in)**:
  ```
@@ -79,22 +79,25 @@ ___
       });
 
 ```
-* `$pouch.push(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
-* `$pouch.pull(localDatabase, remoteDatabase, options)`: Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
-* `$pouch.changes(database, options)`: Listens for change on a db like: https://pouchdb.com/api.html#changes
-* `$pouch.put/post/remove/get(database, ...)`: Same as db.put/post/remove/get(...) https://pouchdb.com/api.html#create_document
-* `$pouch.query(db, 'map/reduce function', options)`: like https://pouchdb.com/api.html#query_database
-* `$pouch.allDocs(db, options)`: like https://pouchdb.com/api.html#batch_fetch but `include_docs` is set to true by default. You can however overwrite it of course.
-* `$pouch.bulkDocs(db, options)`: https://pouchdb.com/api.html#batch_create
-* `$pouch.compact(db, options)`: https://pouchdb.com/api.html#compaction
-* `$pouch.viewCleanup(db)`: https://pouchdb.com/api.html#view_cleanup
-* `$pouch.info(db)`: like https://pouchdb.com/api.html#database_information
-* `$pouch.find(db, request)`: like https://pouchdb.com/api.html#query_index
-* `$pouch.createIndex(db, index)`: like https://pouchdb.com/api.html#create_index
-* `$pouch.putAttachment(db, docId, [rev], attachmentObject(id,data,type)`: like https://pouchdb.com/api.html#save_attachment
-* `$pouch.getAttachment(db, docId, attachmentId)`: like https://pouchdb.com/api.html#get_attachment
-* `$pouch.deleteAttachment(db, docId, attachmentId, docRev)`: like https://pouchdb.com/api.html#delete_attachment
-* `$pouch.close(db)`: https://pouchdb.com/api.html#close_database
+* `$pouch.push(localDatabase, remoteDatabase, OPTIONAL options)`: Like https://pouchdb.com/api.html#replication - replicate-to. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
+* `$pouch.pull(localDatabase, remoteDatabase, OPTIONAL options)`: Like https://pouchdb.com/api.html#replication - replicate-from. Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server.
+* `$pouch.changes(OPTIONAL options, OPTIONAL db)`: Listens for change on a db like: https://pouchdb.com/api.html#changes
+* `$pouch.put(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
+* `$pouch.post(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
+* `$pouch.remove(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
+* `$pouch.get(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
+* `$pouch.query('map/reduce function', OPTIONAL options, OPTIONAL db)`: like https://pouchdb.com/api.html#query_database
+* `$pouch.allDocs(OPTIONAL options, OPTIONAL db)`: like https://pouchdb.com/api.html#batch_fetch but `include_docs` is set to true by default. You can however overwrite it of course.
+* `$pouch.bulkDocs(docs, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#batch_create
+* `$pouch.compact(OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#compaction
+* `$pouch.viewCleanup(OPTIONAL db)`: https://pouchdb.com/api.html#view_cleanup
+* `$pouch.info(OPTIONAL db)`: like https://pouchdb.com/api.html#database_information
+* `$pouch.find(request, OPTIONAL db)`: like https://pouchdb.com/api.html#query_index
+* `$pouch.createIndex(index, OPTIONAL db)`: like https://pouchdb.com/api.html#create_index
+* `$pouch.putAttachment(docId, [rev], attachmentObject(id,data,type), OPTIONAL db)`: like https://pouchdb.com/api.html#save_attachment
+* `$pouch.getAttachment(docId, attachmentId, OPTIONAL db)`: like https://pouchdb.com/api.html#get_attachment
+* `$pouch.deleteAttachment(docId, attachmentId, docRev, OPTIONAL db)`: like https://pouchdb.com/api.html#delete_attachment
+* `$pouch.close(OPTIONAL db)`: https://pouchdb.com/api.html#close_database
 
 #### Non-Reactive Properties
 * `vm.$databases`: the pouchdb instances which are shared across all components.
