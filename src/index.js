@@ -64,8 +64,7 @@ import { isRemote } from 'pouchdb-utils';
             vm._liveFeeds = {};
 
             if (defaultDB) {
-                databases[defaultDB] = new pouch(defaultDB, optionsDB);
-                registerListeners(databases[defaultDB]);
+                makeInstance(defaultDB, optionsDB);
             }
 
             function fetchSession(db = databases[defaultDB]) {
