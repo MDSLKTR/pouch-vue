@@ -784,9 +784,7 @@ import { isRemote } from 'pouchdb-utils';
                             db = databaseParam;
                         } else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
-                                databases[databaseParam] = new pouch(
-                                    databaseParam
-                                );
+                                makeInstance(databaseParam);
                                 login(databases[databaseParam]);
                             }
                             db = databases[databaseParam];
