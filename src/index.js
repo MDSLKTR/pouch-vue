@@ -19,12 +19,12 @@ import { isRemote } from 'pouchdb-utils';
          * option).
          */
         data(vm) {
-            let p = vm.$options.pouch;
-            if (typeof p === 'undefined' || p === null) return {};
-            if (typeof p === 'function') p = p(vm);
-            return Object.keys(p).reduce((a, e) => {
-                a[e] = null;
-                return a
+            let pouchOptions = vm.$options.pouch;
+            if (typeof pouchOptions === 'undefined' || pouchOptions === null) return {};
+            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions(vm);
+            return Object.keys(pouchOptions).reduce((accumulator, currentValue) => {
+                accumulator[currentValue] = null;
+                return accumulator
             }, {});
         },
 
