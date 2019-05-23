@@ -10,47 +10,26 @@ import { isRemote } from 'pouchdb-utils';
         optionsDB = {};
 
     let vuePouch = {
+        /* Creates a property in 'data' with 'null' value for each pouch property
+         * defined on the component.  This way the user does not have to manually
+         * define a data property for the reactive databases/selectors.
+         *
+         * This partial 'data' object is mixed into the components along with
+         * the rest of the API (but is empty unless the component has a 'pouch'
+         * option).
+         */
+        data(vm) {
+            let pouchOptions = vm.$options.pouch;
+            if (typeof pouchOptions === 'undefined' || pouchOptions === null) return {};
+            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions(vm);
+            return Object.keys(pouchOptions).reduce((accumulator, currentValue) => {
+                accumulator[currentValue] = null;
+                return accumulator
+            }, {});
+        },
+
         // lifecycle hooks for mixin
 
-        // make sure the pouch databases are defined on the data object
-        // before its walked and made reactive
-        beforeCreate() {
-            var pouchOptions = this.$options.pouch;
-
-            if (!pouchOptions) {
-                return;
-            }
-
-            if (typeof pouchOptions === 'function') {
-                pouchOptions = pouchOptions();
-            }
-
-            if (!this.$options.data) {
-                this.$options.data = function() {
-                    return {};
-                };
-            }
-
-            let oldDataFunc = this.$options.data;
-
-            // the data function is explicitly passed a vm object in
-            this.$options.data= function(vm) {
-                // get the Vue instance's data object from the constructor
-                var plainObject = oldDataFunc.call(vm, vm);
-
-                // map the pouch databases to an object in the Vue instance's data
-                Object.keys(pouchOptions).map(function(key) {
-                    if (typeof plainObject[key] === 'undefined') {
-                        plainObject[key] = null;
-                    }
-                });
-
-                // return the Vue instance's data with the additional pouch objects
-                // the Vue instance's data will be made reactive before the 'created' lifecycle hook runs
-                return plainObject;
-            };
-
-        },
         // now that the data object has been observed and made reactive
         // the api can be set up
         created() {
@@ -64,8 +43,7 @@ import { isRemote } from 'pouchdb-utils';
             vm._liveFeeds = {};
 
             if (defaultDB) {
-                databases[defaultDB] = new pouch(defaultDB, optionsDB);
-                registerListeners(databases[defaultDB]);
+                makeInstance(defaultDB, optionsDB);
             }
 
             function fetchSession(db = databases[defaultDB]) {
@@ -784,9 +762,7 @@ import { isRemote } from 'pouchdb-utils';
                             db = databaseParam;
                         } else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
-                                databases[databaseParam] = new pouch(
-                                    databaseParam
-                                );
+                                makeInstance(databaseParam);
                                 login(databases[databaseParam]);
                             }
                             db = databases[databaseParam];
@@ -861,26 +837,17 @@ import { isRemote } from 'pouchdb-utils';
     };
 
     let api = {
-        mixin: vuePouch,
-        install: (Vue, options) => {
+        install: (Vue, options = {}) => {
             vue = Vue;
-            pouch = (options && options.pouch) || PouchDB;
-            defaultDB = (options && options.defaultDB) || '';
+
+            ({ pouch = PouchDB, defaultDB = '', optionsDB = {} } = options);
 
             // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
             // var pouchdbDebug = require('pouchdb-debug');
             // PouchDB.plugin(pouchdbDebug);
-            if (options && options.debug && options.debug === '*') {
-                pouch.debug.enable(options.debug);
-            }
+            if (options.debug === '*') pouch.debug.enable('*');
 
-            // include options for creating databases: https://pouchdb.com/api.html#create_database
-            if (options && options.optionsDB) {
-                optionsDB = options && options.optionsDB;
-            }
-
-            // mixin https://github.com/vuejs/vue/blob/dev/src/core/global-api/mixin.js
-            Vue.options = Vue.util.mergeOptions(Vue.options, vuePouch);
+            Vue.mixin(vuePouch);
         },
     };
 
