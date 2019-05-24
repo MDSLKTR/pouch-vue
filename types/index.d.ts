@@ -53,12 +53,6 @@ interface PouchAPI {
     deleteAttachment(docId: PouchDB.Core.DocumentId, attachmentId: PouchDB.Core.AttachmentId, docRev: PouchDB.Core.RevisionId, db?: string): Promise<PouchDB.Core.RemoveAttachmentResponse>;
 }
 declare module 'vue/types/vue' {
-    interface VueConstructor {
-        util: {
-            mergeOptions(parent: Object, child: Object, vm?: any): Object;
-        };
-        options: any;
-    }
     interface Vue {
         $pouch: PouchAPI;
         $databases: PouchDatabases;
