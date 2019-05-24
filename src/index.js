@@ -337,8 +337,7 @@ import { isRemote } from 'pouchdb-utils';
                                 },
                             },
                             options
-                        ),
-                        numPaused = 0;
+                        )
 
                     let sync = pouch
                         .sync(databases[localDB], databases[remoteDB], _options)
@@ -350,8 +349,8 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
+
                                 vm.$emit('pouchdb-sync-paused', {
                                     db: localDB,
                                     paused: true,
@@ -401,8 +400,6 @@ import { isRemote } from 'pouchdb-utils';
                         makeInstance(remoteDB);
                     }
 
-                    let numPaused = 0;
-
                     let rep = databases[localDB].replicate
                         .to(databases[remoteDB], options)
                         .on('paused', err => {
@@ -413,8 +410,7 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
                                 vm.$emit('pouchdb-push-paused', {
                                     db: localDB,
                                     paused: true,
@@ -465,8 +461,6 @@ import { isRemote } from 'pouchdb-utils';
                         makeInstance(remoteDB);
                     }
 
-                    let numPaused = 0;
-
                     let rep = databases[localDB].replicate
                         .from(databases[remoteDB], options)
                         .on('paused', err => {
@@ -477,8 +471,7 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
                                 vm.$emit('pouchdb-pull-paused', {
                                     db: localDB,
                                     paused: true,
@@ -539,8 +532,7 @@ import { isRemote } from 'pouchdb-utils';
                                 },
                             },
                             options
-                        ),
-                        numPaused = 0;
+                        )
 
                     let changes = databases[db]
                         .changes(_options)
