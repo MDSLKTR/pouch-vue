@@ -42,6 +42,10 @@ import { isRemote } from 'pouchdb-utils';
 
             vm._liveFeeds = {};
 
+            let pouchOptions = this.$options.pouch;
+            if (!pouchOptions) return;
+            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions();
+
             if (defaultDB) {
                 makeInstance(defaultDB, optionsDB);
             }
@@ -337,8 +341,7 @@ import { isRemote } from 'pouchdb-utils';
                                 },
                             },
                             options
-                        ),
-                        numPaused = 0;
+                        )
 
                     let sync = pouch
                         .sync(databases[localDB], databases[remoteDB], _options)
@@ -350,8 +353,8 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
+
                                 vm.$emit('pouchdb-sync-paused', {
                                     db: localDB,
                                     paused: true,
@@ -401,8 +404,6 @@ import { isRemote } from 'pouchdb-utils';
                         makeInstance(remoteDB);
                     }
 
-                    let numPaused = 0;
-
                     let rep = databases[localDB].replicate
                         .to(databases[remoteDB], options)
                         .on('paused', err => {
@@ -413,8 +414,7 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
                                 vm.$emit('pouchdb-push-paused', {
                                     db: localDB,
                                     paused: true,
@@ -465,8 +465,6 @@ import { isRemote } from 'pouchdb-utils';
                         makeInstance(remoteDB);
                     }
 
-                    let numPaused = 0;
-
                     let rep = databases[localDB].replicate
                         .from(databases[remoteDB], options)
                         .on('paused', err => {
@@ -477,8 +475,7 @@ import { isRemote } from 'pouchdb-utils';
                                 });
                                 return;
                             }
-                            numPaused += 1;
-                            if (numPaused >= 2) {
+                            else {
                                 vm.$emit('pouchdb-pull-paused', {
                                     db: localDB,
                                     paused: true,
@@ -539,8 +536,7 @@ import { isRemote } from 'pouchdb-utils';
                                 },
                             },
                             options
-                        ),
-                        numPaused = 0;
+                        )
 
                     let changes = databases[db]
                         .changes(_options)
@@ -704,16 +700,6 @@ import { isRemote } from 'pouchdb-utils';
             vm.$pouch = $pouch;
             //add non reactive property
             vm.$databases = databases; // Add non-reactive property
-
-            let pouchOptions = this.$options.pouch;
-
-            if (!pouchOptions) {
-                return;
-            }
-
-            if (typeof pouchOptions === 'function') {
-                pouchOptions = pouchOptions();
-            }
 
             Object.keys(pouchOptions).map(key => {
                 let pouchFn = pouchOptions[key];
