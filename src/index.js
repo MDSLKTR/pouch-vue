@@ -103,8 +103,16 @@ import { isRemote } from 'pouchdb-utils';
                 });
             }
 
-            function makeInstance(db, opts = {}) {
-                databases[db] = new pouch(db, opts);
+            function makeInstance(db, options = {}) {
+                // merge default DB options with those passed in
+            
+                let _options = Object.assign(
+                    {},
+                    optionsDB,
+                    options
+                )
+
+                databases[db] = new pouch(db, _options);
                 registerListeners(databases[db]);
             }
 
