@@ -42,10 +42,6 @@ import { isRemote } from 'pouchdb-utils';
 
             vm._liveFeeds = {};
 
-            let pouchOptions = this.$options.pouch;
-            if (!pouchOptions) return;
-            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions();
-
             if (defaultDB) {
                 makeInstance(defaultDB, optionsDB);
             }
@@ -700,6 +696,16 @@ import { isRemote } from 'pouchdb-utils';
             vm.$pouch = $pouch;
             //add non reactive property
             vm.$databases = databases; // Add non-reactive property
+
+            let pouchOptions = this.$options.pouch;
+
+            if (!pouchOptions) {
+                return;
+            }
+
+            if (typeof pouchOptions === 'function') {
+                pouchOptions = pouchOptions();
+            }
 
             Object.keys(pouchOptions).map(key => {
                 let pouchFn = pouchOptions[key];
