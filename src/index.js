@@ -42,12 +42,8 @@ import { isRemote } from 'pouchdb-utils';
 
             vm._liveFeeds = {};
 
-            let pouchOptions = this.$options.pouch;
-            if (!pouchOptions) return;
-            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions();
-
             if (defaultDB) {
-                makeInstance(defaultDB, optionsDB);
+                makeInstance(defaultDB);
             }
 
             function fetchSession(db = databases[defaultDB]) {
@@ -107,8 +103,22 @@ import { isRemote } from 'pouchdb-utils';
                 });
             }
 
-            function makeInstance(db, opts = {}) {
-                databases[db] = new pouch(db, opts);
+            function makeInstance(db, options = {}) {
+                // Merge the plugin optionsDB options with those passed in
+                // when creating pouch dbs.
+                // Note: default opiontsDB options are passed in when creating 
+                // both local and remote pouch databases. E.g. modifying fetch()
+                // in the options is only useful for remote Dbs but will be passed
+                // for local pouch dbs too if set in optionsDB.
+                // See: https://pouchdb.com/api.html#create_database
+            
+                let _options = Object.assign(
+                    {},
+                    optionsDB,
+                    options
+                )
+
+                databases[db] = new pouch(db, _options);
                 registerListeners(databases[db]);
             }
 
@@ -322,26 +332,26 @@ import { isRemote } from 'pouchdb-utils';
                         makeInstance(localDB);
                     }
                     if (!databases[remoteDB]) {
-                        makeInstance(remoteDB, optionsDB);
+                        makeInstance(remoteDB);
                     }
                     if (!defaultDB) {
                         defaultDB = remoteDB;
                     }
 
                     let _options = Object.assign(
-                            {},
-                            {
-                                live: true,
-                                retry: true,
-                                back_off_function: delay => {
-                                    if (delay === 0) {
-                                        return 1000;
-                                    }
-                                    return delay * 3;
-                                },
+                        {},
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: delay => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
                             },
-                            options
-                        )
+                        },
+                        options
+                    );
 
                     let sync = pouch
                         .sync(databases[localDB], databases[remoteDB], _options)
@@ -403,6 +413,24 @@ import { isRemote } from 'pouchdb-utils';
                     if (!databases[remoteDB]) {
                         makeInstance(remoteDB);
                     }
+                    if (!defaultDB) {
+                        defaultDB = remoteDB;
+                    }
+
+                    let _options = Object.assign(
+                        {},
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: delay => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
+                            },
+                        },
+                        options
+                    );
 
                     let rep = databases[localDB].replicate
                         .to(databases[remoteDB], options)
@@ -464,6 +492,24 @@ import { isRemote } from 'pouchdb-utils';
                     if (!databases[remoteDB]) {
                         makeInstance(remoteDB);
                     }
+                    if (!defaultDB) {
+                        defaultDB = remoteDB;
+                    }
+
+                    let _options = Object.assign(
+                        {},
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: delay => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
+                            },
+                        },
+                        options
+                    );
 
                     let rep = databases[localDB].replicate
                         .from(databases[remoteDB], options)
@@ -524,19 +570,19 @@ import { isRemote } from 'pouchdb-utils';
                     }
 
                     let _options = Object.assign(
-                            {},
-                            {
-                                live: true,
-                                retry: true,
-                                back_off_function: delay => {
-                                    if (delay === 0) {
-                                        return 1000;
-                                    }
-                                    return delay * 3;
-                                },
+                        {},
+                        {
+                            live: true,
+                            retry: true,
+                            back_off_function: delay => {
+                                if (delay === 0) {
+                                    return 1000;
+                                }
+                                return delay * 3;
                             },
-                            options
-                        )
+                        },
+                        options
+                    );
 
                     let changes = databases[db]
                         .changes(_options)
@@ -700,6 +746,16 @@ import { isRemote } from 'pouchdb-utils';
             vm.$pouch = $pouch;
             //add non reactive property
             vm.$databases = databases; // Add non-reactive property
+
+            let pouchOptions = this.$options.pouch;
+
+            if (!pouchOptions) {
+                return;
+            }
+
+            if (typeof pouchOptions === 'function') {
+                pouchOptions = pouchOptions();
+            }
 
             Object.keys(pouchOptions).map(key => {
                 let pouchFn = pouchOptions[key];
