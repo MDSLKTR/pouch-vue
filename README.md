@@ -1,8 +1,8 @@
 # Pouch Vue
 
-## This Plugin is in maintenance mode due to low availability my end, which means new features will only get added by PRs but bugs will still be fixed in a decent time frame
+## This Plugin is now under active development again thanks to @assemblethis
 
-##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though
+##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though. TypeScript support included too.
 
 ## Installation
 Install via npm:
@@ -31,9 +31,22 @@ Then, plug VuePouch into Vue:
       debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings (will be a separate Plugin in PouchDB 7.0)
     });
 ```
+### Known issue with PouchDB v7.0
 
+PouchDB v7.0 introduced [an issue with fetch using different defaults than XHR for cross-domain requests](https://github.com/pouchdb/pouchdb/issues/7391). The issue was fixed in PouchDB v7.1.1 so that fetch defaults now include 'credentials' just as XHR defaults come with credentials. If you are using PouchDB v7.0 you will get a 401 Unauthorized error. The workaround for PouchDB v7.0 is to override the fetch function in the defaults:
+
+```Vue.use(pouchVue,{
+  pouch: PouchDB,
+  defaultDB: 'todos',
+  optionsDB: {
+    fetch: function (url:any, opts:any) {
+        opts.credentials = 'include';
+        return PouchDB.fetch(url, opts);
+    }
+  }
+})
+```
 ## API
-
 ### $pouch
 
 `$pouch` is made available on all vue instances and implements most of pouchdbs current API (https://pouchdb.com/api.html).
@@ -219,7 +232,7 @@ Vue.use(pouchVue,{
     fetch: function (url:any, opts:any) {
         opts.credentials = 'include';
         return PouchDB.fetch(url, opts);
-    }    
+    }
   }
 })
 
