@@ -1,6 +1,6 @@
 # Pouch Vue
 
-## This Plugin is in maintenance mode due to low availability my end, which means new features will only get added by PRs but bugs will still be fixed in a decent time frame
+## This Plugin is now under active development again thanks to @assemblethis
 
 ##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though. TypeScript support included too.
 
@@ -42,7 +42,7 @@ PouchDB v7.0 introduced [an issue with fetch using different defaults than XHR f
     fetch: function (url:any, opts:any) {
         opts.credentials = 'include';
         return PouchDB.fetch(url, opts);
-    }    
+    }
   }
 })
 ```
@@ -232,7 +232,7 @@ Vue.use(pouchVue,{
     fetch: function (url:any, opts:any) {
         opts.credentials = 'include';
         return PouchDB.fetch(url, opts);
-    }    
+    }
   }
 })
 
