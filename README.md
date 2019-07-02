@@ -5,7 +5,7 @@
 ##### Basic structure copied from https://github.com/buhrmi/vue-pouch with a lot of api changes though. TypeScript support included too.
 
 ## Installation
-Make sure to have pouchdb-browser (or pouchdb depending on what you need) pouchdb-find and pouchdb-live-find installed
+Make sure to have `pouchdb-browser` (or `pouchdb` depending on what you need) `pouchdb-find` and `pouchdb-live-find` installed
 ````
     npm i pouchdb-browser pouchdb-live-find pouchdb-find
 ````
