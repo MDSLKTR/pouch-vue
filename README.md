@@ -29,6 +29,7 @@ If you want to use remote databases (CouchDB, Cloudant, etc.), you should also i
 Then, plug VuePouch into Vue:
 ```
     import PouchVue from 'pouchVue';
+    
     Vue.use(pouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'remoteDbName',  // this is used as a default connect/disconnect database
