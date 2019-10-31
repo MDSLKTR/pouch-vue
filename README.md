@@ -28,6 +28,7 @@ If you want to use remote databases (CouchDB, Cloudant, etc.), you should also i
 ```
 Then, plug VuePouch into Vue:
 ```
+    import Vue from 'vue';
     import PouchVue from 'pouchVue';
     
     Vue.use(pouchVue, {
