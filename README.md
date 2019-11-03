@@ -31,7 +31,7 @@ Then, plug VuePouch into Vue:
     import Vue from 'vue';
     import PouchVue from 'pouchVue';
     
-    Vue.use(pouchVue, {
+    Vue.use(PouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
       defaultDB: 'remoteDbName',  // this is used as a default connect/disconnect database
       optionDB: {}, // this is used to include a custom fetch() method (see TypeScript example)
