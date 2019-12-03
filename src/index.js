@@ -324,7 +324,7 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
                     }
-                    return fetchSession();
+                    return fetchSession(databases[db]);
                 },
 
                 sync(localDB, remoteDB=defaultDB, options = {}) {
