@@ -208,7 +208,7 @@ describe('Set selector to null', () => {
       // trip up the watcher on the pouch database config options
       let selector = function () { return (this.age < this.maxAge) ? null : {} }
 
-      function testFunc() {
+      function testFunc(done) {
         const localVue = createLocalVue()
 
         // add requisite PouchDB plugins
@@ -232,7 +232,13 @@ describe('Set selector to null', () => {
         wrapper.vm.todos = ['north', 'east', 'south', 'west'];
 
         wrapper.vm.maxAge = 50;
-        expect(wrapper.emitted('pouchdb-livefeed-error')).toHaveLength(1);
+          
+        //watchers are deferred to the next update cycle that Vue uses to look for changes.
+        //the change to the selector has a watcher on it in pouch-vue
+        wrapper.vm.$nextTick(() => {  
+          expect(wrapper.emitted('pouchdb-livefeed-error')).toHaveLength(1);
+          done();
+        });            
       }
       test(tryTestName, testFunc);
     }
