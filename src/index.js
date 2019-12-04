@@ -402,8 +402,6 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
 
-                    fetchSession(databases[remoteDB]);
-
                     return sync;
                 },
                 push(localDB, remoteDB=defaultDB, options = {}) {
@@ -479,8 +477,6 @@ import { isRemote } from 'pouchdb-utils';
                                 error: err,
                             });
                         });
-
-                    fetchSession(databases[remoteDB]);
 
                     return rep;
                 },
@@ -559,8 +555,6 @@ import { isRemote } from 'pouchdb-utils';
                             });
                         });
 
-                    fetchSession(databases[remoteDB]);
-
                     return rep;
                 },
 
@@ -604,8 +598,6 @@ import { isRemote } from 'pouchdb-utils';
                                 error: err,
                             });
                         });
-
-                    fetchSession(databases[db]);
 
                     return changes;
                 },
@@ -805,7 +797,6 @@ import { isRemote } from 'pouchdb-utils';
                         } else if (typeof databaseParam === 'string') {
                             if (!databases[databaseParam]) {
                                 makeInstance(databaseParam);
-                                login(databases[databaseParam]);
                             }
                             db = databases[databaseParam];
                         }
