@@ -29,7 +29,7 @@ If you want to use remote databases (CouchDB, Cloudant, etc.), you should also i
 Then, plug VuePouch into Vue:
 ```
     import Vue from 'vue';
-    import PouchVue from 'pouchVue';
+    import PouchVue from 'pouch-vue';
     
     Vue.use(PouchVue, {
       pouch: PouchDB,    // optional if `PouchDB` is available on the global object
@@ -128,10 +128,10 @@ ___
 <template>
   <div class="todos">
     <input v-model="message" placeholder="New Todo">
-    <button @click="$pouch.post('todos', {message: message});message=''">Save Todo</button>
+    <button @click="$pouch.post({message: message},{},'todos');message=''">Save Todo</button>
     <div v-for="todo in todos">
-      <input v-model="todo.message" @change="$pouch.put('todos', todo)">
-      <button @click="$pouch.remove('todos', todo)">Remove</button>
+      <input v-model="todo.message" @change="$pouch.put(todo,{},'todos')">
+      <button @click="$pouch.remove(todo,{},'todos')">Remove</button>
     </div>
   </div>
 </template>
@@ -251,10 +251,10 @@ Todos.vue
 <template>
   <div class="todos">
     <input v-model="message" placeholder="New Todo">
-    <button @click="$pouch.post('todos', {message: message});message=''">Save Todo</button>
+    <button @click="$pouch.post({message: message},{},'todos');message=''">Save Todo</button>
     <div v-for="todo in todos">
-      <input v-model="todo.message" @change="$pouch.put('todos', todo)">
-      <button @click="$pouch.remove('todos', todo)">Remove</button>
+      <input v-model="todo.message" @change="$pouch.put(todo,{},'todos')">
+      <button @click="$pouch.remove(todo,{},'todos')">Remove</button>
     </div>
   </div>
 </template>
