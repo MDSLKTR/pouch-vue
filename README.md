@@ -80,7 +80,7 @@ ___
 * `$pouch.sync(localDatabase, OPTIONAL remoteDatabase, OPTIONAL options)`: The optional remoteDatabase parameter will use the default db set in the pouch options initially. Basically the same as PouchDB.sync(local, remote, {live: true, retry: true}). Also, if the browser has an active session cookie, it will fetch session data (username, etc) from the remote server. **BONUS:** If your remote database runs CouchDB 2.0 or higher, you can also specify a Mango Selector that is used to filter documents coming from the remote server. Callback functions will be invoked with the name `pouchdb-[method]-[type]`. So in this case you can use `this.$on('pouchdb-sync-change', callback(data))` to listen when a change occurs. See https://pouchdb.com/api.html#sync for a full list of events you can use.
 
 **default options (will be merged with the options passed in)**:
- ```
+ ```javascript
 {
     live: true,
     retry: true,
@@ -93,7 +93,7 @@ ___
 }
 ```
 **For example:**
-```
+```javascript
     $pouch.sync('complaints', 'https:/42.233.1.44/complaints', {
         selector: {
             type: 'complaint',
@@ -285,7 +285,7 @@ export default class Todos extends Vue {
 
 ### User Authentication
 
-```vue
+```javascript
  this.$pouch.connect(this.credentials.username, this.credentials.password)
     .then((res) => {
         let isUnauthorized = res.error === 'unauthorized',
@@ -306,7 +306,7 @@ export default class Todos extends Vue {
 ```
 
 ### Handle Sessions
-```
+```javascript
 this.$pouch.getSession().then((data) => {
     if (data.status === 0) {
         this.$router.push('/login');
