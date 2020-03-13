@@ -220,7 +220,7 @@ TypeScript example with a TypeScript file to include the pouch-vue plugin and a 
 using the plugin.
 
 main.ts
-```vue
+```typescript
 
 import { Component, Vue } from 'vue-property-decorator';
 import PouchDB from 'pouchdb-browser';
