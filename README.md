@@ -18,8 +18,11 @@ Install via npm:
 The only requirement is that `pouchdb-live-find` is installed:
 ```
     import PouchDB from 'pouchdb-browser'
-    PouchDB.plugin(require('pouchdb-find'));
-    PouchDB.plugin(require('pouchdb-live-find'));
+    import PouchFind from 'pouchdb-find'
+    import PouchLiveFind from 'pouchdb-live-find'
+    
+    PouchDB.plugin(PouchFind)
+    PouchDB.plugin(PouchLiveFind)
 ```
 
 If you want to use remote databases (CouchDB, Cloudant, etc.), you should also install the authentication plugin:
