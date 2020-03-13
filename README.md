@@ -6,17 +6,17 @@
 
 ## Installation
 Make sure to have `pouchdb-browser` (or `pouchdb` depending on what you need) `pouchdb-find` and `pouchdb-live-find` installed
-````
+````sh
     npm i pouchdb-browser pouchdb-live-find pouchdb-find
 ````
 
 Install via npm:
-```
+```sh
     npm install --save pouch-vue
 ```
 
 The only requirement is that `pouchdb-live-find` is installed:
-```
+```javascript
     import PouchDB from 'pouchdb-browser'
     import PouchFind from 'pouchdb-find'
     import PouchLiveFind from 'pouchdb-live-find'
@@ -26,11 +26,11 @@ The only requirement is that `pouchdb-live-find` is installed:
 ```
 
 If you want to use remote databases (CouchDB, Cloudant, etc.), you should also install the authentication plugin:
-```
+```javascript
     PouchDB.plugin(require('pouchdb-authentication'));
 ```
 Then, plug VuePouch into Vue:
-```
+```javascript
     import Vue from 'vue';
     import PouchVue from 'pouch-vue';
     
@@ -45,7 +45,8 @@ Then, plug VuePouch into Vue:
 
 PouchDB v7.0 introduced [an issue with fetch using different defaults than XHR for cross-domain requests](https://github.com/pouchdb/pouchdb/issues/7391). The issue was fixed in PouchDB v7.1.1 so that fetch defaults now include 'credentials' just as XHR defaults come with credentials. If you are using PouchDB v7.0 you will get a 401 Unauthorized error. The workaround for PouchDB v7.0 is to override the fetch function in the defaults:
 
-```Vue.use(pouchVue,{
+```javascript
+Vue.use(pouchVue,{
   pouch: PouchDB,
   defaultDB: 'todos',
   optionsDB: {
@@ -199,7 +200,7 @@ ___
 
 If you only want to sync a single document that matches a selector, use `first: true`:
 
-```vue
+```javascript
 module.exports = {
   // ...
   pouch: {
