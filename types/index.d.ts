@@ -139,7 +139,7 @@ interface PouchAPI {
     liveFind(
         options?: PouchDB.LiveFind.Options,
         db?: string
-    ): Promise<PouchDB.LiveFind.LiveFeed>;
+    ): Record<string, PouchDB.LiveFind.LiveFeed>;
 }
 declare module 'vue/types/vue' {
     interface Vue {
