@@ -685,7 +685,7 @@ import { isRemote } from 'pouchdb-utils';
 
                     if (!databases[db].liveFind) {
                         console.error('pouchdb-live-find is not installed');
-                        return;
+                        return false;
                     }
 
                     return databases[db].liveFind(options);
