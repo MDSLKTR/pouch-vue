@@ -8,9 +8,7 @@ const pkg = require('./package.json');
 
 export default {
     input: './src/index.js',
-    output: [
-        { file: pkg.main, format: 'umd', name: 'pouchVue' },
-    ],
+    output: [{ file: pkg.main, format: 'umd', name: 'pouchVue' }],
     plugins: [
         json(),
         resolve(),
@@ -24,5 +22,7 @@ export default {
      * (c) ${new Date().getFullYear()} Simon Kunz
      * @license MIT
      */
-  `.replace(/ {4}/gm, '').trim(),
+  `
+        .replace(/ {4}/gm, '')
+        .trim(),
 };

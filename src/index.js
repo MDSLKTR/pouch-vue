@@ -1,6 +1,6 @@
 import { isRemote } from 'pouchdb-utils';
 
-(function() {
+(function () {
     let vue = null,
         pouch = null,
         defaultDB = null,
@@ -20,12 +20,17 @@ import { isRemote } from 'pouchdb-utils';
          */
         data(vm) {
             let pouchOptions = vm.$options.pouch;
-            if (typeof pouchOptions === 'undefined' || pouchOptions === null) return {};
-            if (typeof pouchOptions === 'function') pouchOptions = pouchOptions(vm);
-            return Object.keys(pouchOptions).reduce((accumulator, currentValue) => {
-                accumulator[currentValue] = null;
-                return accumulator
-            }, {});
+            if (typeof pouchOptions === 'undefined' || pouchOptions === null)
+                return {};
+            if (typeof pouchOptions === 'function')
+                pouchOptions = pouchOptions(vm);
+            return Object.keys(pouchOptions).reduce(
+                (accumulator, currentValue) => {
+                    accumulator[currentValue] = null;
+                    return accumulator;
+                },
+                {}
+            );
         },
 
         // lifecycle hooks for mixin
@@ -47,13 +52,11 @@ import { isRemote } from 'pouchdb-utils';
             }
 
             function fetchSession(db = databases[defaultDB]) {
-                return new Promise(resolve => {
-                    db
-                        .getSession()
-                        .then(session => {
-                            db
-                                .getUser(session.userCtx.name)
-                                .then(userData => {
+                return new Promise((resolve) => {
+                    db.getSession()
+                        .then((session) => {
+                            db.getUser(session.userCtx.name)
+                                .then((userData) => {
                                     let userObj = Object.assign(
                                         {},
                                         session.userCtx,
@@ -64,25 +67,22 @@ import { isRemote } from 'pouchdb-utils';
                                         hasAccess: true,
                                     });
                                 })
-                                .catch(error => {
+                                .catch((error) => {
                                     resolve(error);
                                 });
                         })
-                        .catch(error => {
+                        .catch((error) => {
                             resolve(error);
                         });
                 });
             }
 
             function login(db = databases[defaultDB]) {
-                return new Promise(resolve => {
-
-                    db
-                        .logIn(defaultUsername, defaultPassword)
-                        .then(user => {
-                            db
-                                .getUser(user.name)
-                                .then(userData => {
+                return new Promise((resolve) => {
+                    db.logIn(defaultUsername, defaultPassword)
+                        .then((user) => {
+                            db.getUser(user.name)
+                                .then((userData) => {
                                     let userObj = Object.assign(
                                         {},
                                         user,
@@ -93,11 +93,11 @@ import { isRemote } from 'pouchdb-utils';
                                         hasAccess: true,
                                     });
                                 })
-                                .catch(error => {
+                                .catch((error) => {
                                     resolve(error);
                                 });
                         })
-                        .catch(error => {
+                        .catch((error) => {
                             resolve(error);
                         });
                 });
@@ -106,30 +106,26 @@ import { isRemote } from 'pouchdb-utils';
             function makeInstance(db, options = {}) {
                 // Merge the plugin optionsDB options with those passed in
                 // when creating pouch dbs.
-                // Note: default opiontsDB options are passed in when creating 
+                // Note: default opiontsDB options are passed in when creating
                 // both local and remote pouch databases. E.g. modifying fetch()
                 // in the options is only useful for remote Dbs but will be passed
                 // for local pouch dbs too if set in optionsDB.
                 // See: https://pouchdb.com/api.html#create_database
-            
-                let _options = Object.assign(
-                    {},
-                    optionsDB,
-                    options
-                )
+
+                let _options = Object.assign({}, optionsDB, options);
 
                 databases[db] = new pouch(db, _options);
                 registerListeners(databases[db]);
             }
 
             function registerListeners(db) {
-                db.on('created', name => {
+                db.on('created', (name) => {
                     vm.$emit('pouchdb-db-created', {
                         db: name,
                         ok: true,
                     });
                 });
-                db.on('destroyed', name => {
+                db.on('destroyed', (name) => {
                     vm.$emit('pouchdb-db-destroyed', {
                         db: name,
                         ok: true,
@@ -139,12 +135,12 @@ import { isRemote } from 'pouchdb-utils';
 
             let $pouch = {
                 version: '__VERSION__',
-                connect(username, password, db=defaultDB) {
+                connect(username, password, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    return new Promise(resolve => {
+                    return new Promise((resolve) => {
                         defaultUsername = username;
                         defaultPassword = password;
 
@@ -157,7 +153,7 @@ import { isRemote } from 'pouchdb-utils';
                             return;
                         }
 
-                        login(databases[db]).then(res => {
+                        login(databases[db]).then((res) => {
                             resolve(res);
                         });
                     });
@@ -171,13 +167,13 @@ import { isRemote } from 'pouchdb-utils';
                         .then(() => {
                             return vm.$pouch.connect(username, password, db);
                         })
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                putUser(username, metadata = {}, db=defaultDB) {
+                putUser(username, metadata = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -185,77 +181,75 @@ import { isRemote } from 'pouchdb-utils';
                         .putUser(username, {
                             metadata,
                         })
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                deleteUser(username, db=defaultDB) {
+                deleteUser(username, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return databases[db]
-                        .deleteUser(username)
-                        .catch(error => {
-                            return new Promise(resolve => {
-                                resolve(error);
-                            });
+                    return databases[db].deleteUser(username).catch((error) => {
+                        return new Promise((resolve) => {
+                            resolve(error);
                         });
+                    });
                 },
-                changePassword(username, password, db=defaultDB) {
+                changePassword(username, password, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db]
                         .changePassword(username, password)
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                changeUsername(oldUsername, newUsername, db=defaultDB) {
+                changeUsername(oldUsername, newUsername, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db]
                         .changeUsername(oldUsername, newUsername)
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                signUpAdmin(adminUsername, adminPassword, db=defaultDB) {
+                signUpAdmin(adminUsername, adminPassword, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db]
                         .signUpAdmin(adminUsername, adminPassword)
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                deleteAdmin(adminUsername, db=defaultDB) {
+                deleteAdmin(adminUsername, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db]
                         .deleteAdmin(adminUsername)
-                        .catch(error => {
-                            return new Promise(resolve => {
+                        .catch((error) => {
+                            return new Promise((resolve) => {
                                 resolve(error);
                             });
                         });
                 },
-                disconnect(db=defaultDB) {
+                disconnect(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
-                    return new Promise(resolve => {
+                    return new Promise((resolve) => {
                         defaultUsername = null;
                         defaultPassword = null;
 
@@ -270,20 +264,20 @@ import { isRemote } from 'pouchdb-utils';
 
                         databases[db]
                             .logOut()
-                            .then(res => {
+                            .then((res) => {
                                 resolve({
                                     ok: res.ok,
                                     user: null,
                                     hasAccess: false,
                                 });
                             })
-                            .catch(error => {
+                            .catch((error) => {
                                 resolve(error);
                             });
                     });
                 },
 
-                destroy(db=defaultDB) {
+                destroy(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -299,7 +293,7 @@ import { isRemote } from 'pouchdb-utils';
                     pouch.defaults(options);
                 },
 
-                close(db=defaultDB) {
+                close(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -311,12 +305,12 @@ import { isRemote } from 'pouchdb-utils';
                     });
                 },
 
-                getSession(db=defaultDB) {
+                getSession(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     if (!isRemote(databases[db])) {
-                        return new Promise(resolve => {
+                        return new Promise((resolve) => {
                             resolve({
                                 message: 'database is not remote',
                                 error: 'bad request',
@@ -327,7 +321,7 @@ import { isRemote } from 'pouchdb-utils';
                     return fetchSession(databases[db]);
                 },
 
-                sync(localDB, remoteDB=defaultDB, options = {}) {
+                sync(localDB, remoteDB = defaultDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -343,7 +337,7 @@ import { isRemote } from 'pouchdb-utils';
                         {
                             live: true,
                             retry: true,
-                            back_off_function: delay => {
+                            back_off_function: (delay) => {
                                 if (delay === 0) {
                                     return 1000;
                                 }
@@ -355,23 +349,21 @@ import { isRemote } from 'pouchdb-utils';
 
                     let sync = pouch
                         .sync(databases[localDB], databases[remoteDB], _options)
-                        .on('paused', err => {
+                        .on('paused', (err) => {
                             if (err) {
                                 vm.$emit('pouchdb-sync-error', {
                                     db: localDB,
                                     error: err,
                                 });
                                 return;
-                            }
-                            else {
-
+                            } else {
                                 vm.$emit('pouchdb-sync-paused', {
                                     db: localDB,
                                     paused: true,
                                 });
                             }
                         })
-                        .on('change', info => {
+                        .on('change', (info) => {
                             vm.$emit('pouchdb-sync-change', {
                                 db: localDB,
                                 info: info,
@@ -383,19 +375,19 @@ import { isRemote } from 'pouchdb-utils';
                                 active: true,
                             });
                         })
-                        .on('denied', err => {
+                        .on('denied', (err) => {
                             vm.$emit('pouchdb-sync-denied', {
                                 db: localDB,
                                 error: err,
                             });
                         })
-                        .on('complete', info => {
+                        .on('complete', (info) => {
                             vm.$emit('pouchdb-sync-complete', {
                                 db: localDB,
                                 info: info,
                             });
                         })
-                        .on('error', err => {
+                        .on('error', (err) => {
                             vm.$emit('pouchdb-sync-error', {
                                 db: localDB,
                                 error: err,
@@ -404,7 +396,7 @@ import { isRemote } from 'pouchdb-utils';
 
                     return sync;
                 },
-                push(localDB, remoteDB=defaultDB, options = {}) {
+                push(localDB, remoteDB = defaultDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -415,39 +407,23 @@ import { isRemote } from 'pouchdb-utils';
                         defaultDB = remoteDB;
                     }
 
-                    let _options = Object.assign(
-                        {},
-                        {
-                            live: true,
-                            retry: true,
-                            back_off_function: delay => {
-                                if (delay === 0) {
-                                    return 1000;
-                                }
-                                return delay * 3;
-                            },
-                        },
-                        options
-                    );
-
                     let rep = databases[localDB].replicate
                         .to(databases[remoteDB], options)
-                        .on('paused', err => {
+                        .on('paused', (err) => {
                             if (err) {
                                 vm.$emit('pouchdb-push-error', {
                                     db: localDB,
                                     error: err,
                                 });
                                 return;
-                            }
-                            else {
+                            } else {
                                 vm.$emit('pouchdb-push-paused', {
                                     db: localDB,
                                     paused: true,
                                 });
                             }
                         })
-                        .on('change', info => {
+                        .on('change', (info) => {
                             vm.$emit('pouchdb-push-change', {
                                 db: localDB,
                                 info: info,
@@ -459,19 +435,19 @@ import { isRemote } from 'pouchdb-utils';
                                 active: true,
                             });
                         })
-                        .on('denied', err => {
+                        .on('denied', (err) => {
                             vm.$emit('pouchdb-push-denied', {
                                 db: localDB,
                                 error: err,
                             });
                         })
-                        .on('complete', info => {
+                        .on('complete', (info) => {
                             vm.$emit('pouchdb-push-complete', {
                                 db: localDB,
                                 info: info,
                             });
                         })
-                        .on('error', err => {
+                        .on('error', (err) => {
                             vm.$emit('pouchdb-push-error', {
                                 db: localDB,
                                 error: err,
@@ -481,7 +457,7 @@ import { isRemote } from 'pouchdb-utils';
                     return rep;
                 },
 
-                pull(localDB, remoteDB=defaultDB, options = {}) {
+                pull(localDB, remoteDB = defaultDB, options = {}) {
                     if (!databases[localDB]) {
                         makeInstance(localDB);
                     }
@@ -492,39 +468,23 @@ import { isRemote } from 'pouchdb-utils';
                         defaultDB = remoteDB;
                     }
 
-                    let _options = Object.assign(
-                        {},
-                        {
-                            live: true,
-                            retry: true,
-                            back_off_function: delay => {
-                                if (delay === 0) {
-                                    return 1000;
-                                }
-                                return delay * 3;
-                            },
-                        },
-                        options
-                    );
-
                     let rep = databases[localDB].replicate
                         .from(databases[remoteDB], options)
-                        .on('paused', err => {
+                        .on('paused', (err) => {
                             if (err) {
                                 vm.$emit('pouchdb-pull-error', {
                                     db: localDB,
                                     error: err,
                                 });
                                 return;
-                            }
-                            else {
+                            } else {
                                 vm.$emit('pouchdb-pull-paused', {
                                     db: localDB,
                                     paused: true,
                                 });
                             }
                         })
-                        .on('change', info => {
+                        .on('change', (info) => {
                             vm.$emit('pouchdb-pull-change', {
                                 db: localDB,
                                 info: info,
@@ -536,19 +496,19 @@ import { isRemote } from 'pouchdb-utils';
                                 active: true,
                             });
                         })
-                        .on('denied', err => {
+                        .on('denied', (err) => {
                             vm.$emit('pouchdb-pull-denied', {
                                 db: localDB,
                                 error: err,
                             });
                         })
-                        .on('complete', info => {
+                        .on('complete', (info) => {
                             vm.$emit('pouchdb-pull-complete', {
                                 db: localDB,
                                 info: info,
                             });
                         })
-                        .on('error', err => {
+                        .on('error', (err) => {
                             vm.$emit('pouchdb-pull-error', {
                                 db: localDB,
                                 error: err,
@@ -558,41 +518,26 @@ import { isRemote } from 'pouchdb-utils';
                     return rep;
                 },
 
-                changes(options = {}, db=defaultDB) {
+                changes(options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
 
-                    let _options = Object.assign(
-                        {},
-                        {
-                            live: true,
-                            retry: true,
-                            back_off_function: delay => {
-                                if (delay === 0) {
-                                    return 1000;
-                                }
-                                return delay * 3;
-                            },
-                        },
-                        options
-                    );
-
                     let changes = databases[db]
-                        .changes(_options)
-                        .on('change', info => {
+                        .changes(options)
+                        .on('change', (info) => {
                             vm.$emit('pouchdb-changes-change', {
                                 db: db,
                                 info: info,
                             });
                         })
-                        .on('complete', info => {
+                        .on('complete', (info) => {
                             vm.$emit('pouchdb-changes-complete', {
                                 db: db,
                                 info: info,
                             });
                         })
-                        .on('error', err => {
+                        .on('error', (err) => {
                             vm.$emit('pouchdb-changes-error', {
                                 db: db,
                                 error: err,
@@ -602,42 +547,42 @@ import { isRemote } from 'pouchdb-utils';
                     return changes;
                 },
 
-                get(object, options = {}, db=defaultDB) {
+                get(object, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].get(object, options);
                 },
 
-                put(object, options = {}, db=defaultDB) {
+                put(object, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].put(object, options);
                 },
 
-                post(object, options = {}, db=defaultDB) {
+                post(object, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].post(object, options);
                 },
 
-                remove(object, options = {}, db=defaultDB) {
+                remove(object, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].remove(object, options);
                 },
 
-                query(fun, options = {}, db=defaultDB) {
+                query(fun, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
                     return databases[db].query(fun, options);
                 },
 
-                find(options, db=defaultDB) {
+                find(options, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -645,7 +590,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].find(options);
                 },
 
-                createIndex(index, db=defaultDB) {
+                createIndex(index, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -653,7 +598,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].createIndex(index);
                 },
 
-                allDocs(options = {}, db=defaultDB) {
+                allDocs(options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -667,7 +612,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].allDocs(_options);
                 },
 
-                bulkDocs(docs, options = {}, db=defaultDB) {
+                bulkDocs(docs, options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -675,7 +620,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].bulkDocs(docs, options);
                 },
 
-                compact(options = {}, db=defaultDB) {
+                compact(options = {}, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -683,7 +628,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].compact(options);
                 },
 
-                viewCleanup(db=defaultDB) {
+                viewCleanup(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -691,7 +636,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].viewCleanup();
                 },
 
-                info(db=defaultDB) {
+                info(db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -699,7 +644,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].info();
                 },
 
-                putAttachment(docId, rev, attachment, db=defaultDB) {
+                putAttachment(docId, rev, attachment, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -713,7 +658,7 @@ import { isRemote } from 'pouchdb-utils';
                     );
                 },
 
-                getAttachment(docId, attachmentId, db=defaultDB) {
+                getAttachment(docId, attachmentId, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -721,7 +666,7 @@ import { isRemote } from 'pouchdb-utils';
                     return databases[db].getAttachment(docId, attachmentId);
                 },
 
-                deleteAttachment(docId, attachmentId, docRev, db=defaultDB) {
+                deleteAttachment(docId, attachmentId, docRev, db = defaultDB) {
                     if (!databases[db]) {
                         makeInstance(db);
                     }
@@ -731,6 +676,19 @@ import { isRemote } from 'pouchdb-utils';
                         attachmentId,
                         docRev
                     );
+                },
+
+                liveFind(options, db = defaultDB) {
+                    if (!databases[db]) {
+                        makeInstance(db);
+                    }
+
+                    if (!databases[db].liveFind) {
+                        console.error('pouchdb-live-find is not installed');
+                        return;
+                    }
+
+                    return databases[db].liveFind(options);
                 },
             };
 
@@ -749,7 +707,7 @@ import { isRemote } from 'pouchdb-utils';
                 pouchOptions = pouchOptions();
             }
 
-            Object.keys(pouchOptions).map(key => {
+            Object.keys(pouchOptions).map((key) => {
                 let pouchFn = pouchOptions[key];
                 if (typeof pouchFn !== 'function') {
                     pouchFn = () => {
@@ -761,7 +719,7 @@ import { isRemote } from 'pouchdb-utils';
                 //
                 vm.$watch(
                     pouchFn,
-                    config => {
+                    (config) => {
                         // if the selector is now giving a value of null or undefined, then return
                         // the previous liveFeed object will remain
                         if (!config) {
@@ -774,8 +732,7 @@ import { isRemote } from 'pouchdb-utils';
                             return;
                         }
 
-
-                        let selector, sort, skip, limit, first;
+                        let selector, sort, skip, limit, first, fields;
 
                         if (config.selector) {
                             selector = config.selector;
@@ -783,6 +740,7 @@ import { isRemote } from 'pouchdb-utils';
                             skip = config.skip;
                             limit = config.limit;
                             first = config.first;
+                            fields = config.fields;
                         } else {
                             selector = config;
                         }
@@ -817,21 +775,23 @@ import { isRemote } from 'pouchdb-utils';
                             .liveFind({
                                 selector: selector,
                                 sort: sort,
+                                fields: fields,
                                 skip: skip,
                                 limit: limit,
                                 aggregate: true,
                             })
                             .on('update', (update, aggregate) => {
-                                if (first && aggregate)
+                                if (first && aggregate) {
                                     aggregate = aggregate[0];
+                                }
 
                                 vm.$data[key] = aggregateCache = aggregate;
 
                                 vm.$emit('pouchdb-livefeed-update', {
                                     db: key,
                                     name: db.name,
+                                    data: update,
                                 });
-
                             })
                             .on('ready', () => {
                                 vm.$data[key] = aggregateCache;
@@ -841,13 +801,13 @@ import { isRemote } from 'pouchdb-utils';
                                     name: db.name,
                                 });
                             })
-                            .on('cancelled', function() {
+                            .on('cancelled', function () {
                                 vm.$emit('pouchdb-livefeed-cancel', {
                                     db: key,
                                     name: db.name,
                                 });
                             })
-                            .on('error', function(err) {
+                            .on('error', function (err) {
                                 vm.$emit('pouchdb-livefeed-error', {
                                     db: key,
                                     name: db.name,
@@ -863,7 +823,7 @@ import { isRemote } from 'pouchdb-utils';
         },
         // tear down the liveFeed objects
         beforeDestroy() {
-            Object.keys(this._liveFeeds).map(lfKey => {
+            Object.keys(this._liveFeeds).map((lfKey) => {
                 this._liveFeeds[lfKey].cancel();
             });
         },
@@ -878,7 +838,9 @@ import { isRemote } from 'pouchdb-utils';
             // In PouchDB v7.0.0 the debug() API was moved to a separate plugin.
             // var pouchdbDebug = require('pouchdb-debug');
             // PouchDB.plugin(pouchdbDebug);
-            if (options.debug === '*') pouch.debug.enable('*');
+            if (pouch.debug && options.debug) {
+                pouch.debug.enable(options.debug);
+            }
 
             Vue.mixin(vuePouch);
         },
