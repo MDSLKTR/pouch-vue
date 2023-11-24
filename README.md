@@ -108,7 +108,7 @@ ___
 * `$pouch.changes(OPTIONAL options, OPTIONAL db)`: Listens for change on a db like: https://pouchdb.com/api.html#changes
 * `$pouch.put(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
 * `$pouch.post(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
-* `$pouch.remove(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
+* `$pouch.remove(id, rev, OPTIONAL db)`: https://pouchdb.com/api.html#delete_document
 * `$pouch.get(object, OPTIONAL options, OPTIONAL db)`: https://pouchdb.com/api.html#create_document
 * `$pouch.query('map/reduce function', OPTIONAL options, OPTIONAL db)`: like https://pouchdb.com/api.html#query_database
 * `$pouch.allDocs(OPTIONAL options, OPTIONAL db)`: like https://pouchdb.com/api.html#batch_fetch but `include_docs` is set to true by default. You can however overwrite it of course.
